@@ -2,549 +2,184 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>TraceLens — Photo Protection</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
 html{scroll-behavior:smooth}
-
-:root{
-  --bg:#050713;
-  --panel:#0c1224;
-  --border:#26345c;
-  --text:#f4f7ff;
-  --muted:#929dbc;
-  --cyan:#55e6ff;
-  --blue:#628cff;
-  --purple:#a56cff;
-  --green:#4ee39b;
-  --red:#ff657d;
-}
-
 body{
-  font-family:Inter,Segoe UI,Arial,sans-serif;
-  background:
-    radial-gradient(circle at 15% 10%,#122d59 0,transparent 27%),
-    radial-gradient(circle at 90% 12%,#321b57 0,transparent 25%),
-    #050713;
-  color:var(--text);
-  min-height:100vh;
+margin:0;
+font-family:Inter,Segoe UI,Arial,sans-serif;
+background:
+radial-gradient(circle at 15% 5%,#142755 0,transparent 28%),
+radial-gradient(circle at 90% 15%,#311958 0,transparent 25%),
+#050713;
+color:#f5f7ff;
+min-height:100vh;
 }
-
 body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  opacity:.15;
-  background-image:
-    linear-gradient(#7181ae18 1px,transparent 1px),
-    linear-gradient(90deg,#7181ae18 1px,transparent 1px);
-  background-size:40px 40px;
+content:"";
+position:fixed;inset:0;pointer-events:none;opacity:.14;
+background-image:
+linear-gradient(#7181ae18 1px,transparent 1px),
+linear-gradient(90deg,#7181ae18 1px,transparent 1px);
+background-size:40px 40px;
 }
-
-/* NAV */
-
 nav{
-  height:72px;
-  padding:0 5%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:#050713cc;
-  backdrop-filter:blur(18px);
-  border-bottom:1px solid #ffffff10;
+height:72px;padding:0 5%;display:flex;align-items:center;
+justify-content:space-between;border-bottom:1px solid #ffffff12;
+background:#050713cc;backdrop-filter:blur(18px);
+position:sticky;top:0;z-index:20;
 }
-
-.logo{
-  font-size:23px;
-  font-weight:900;
-  letter-spacing:-1px;
-}
-
-.logo span{color:var(--cyan)}
-
-.links{
-  display:flex;
-  gap:28px;
-}
-
-.links a{
-  color:var(--muted);
-  text-decoration:none;
-  font-size:14px;
-}
-
-.links a:hover{color:white}
-
-/* BUTTONS */
-
+.logo{font-size:23px;font-weight:900}
+.logo span{color:#55e6ff}
+.links{display:flex;gap:25px}
+.links a{color:#929dbc;text-decoration:none;font-size:14px}
 button,.btn{
-  border:0;
-  border-radius:12px;
-  padding:13px 19px;
-  font-weight:800;
-  cursor:pointer;
-  transition:.2s;
-  font-size:14px;
+border:0;border-radius:12px;padding:13px 19px;font-weight:800;
+cursor:pointer;text-decoration:none;display:inline-block;transition:.2s;
 }
-
 .primary{
-  color:#071019;
-  background:linear-gradient(135deg,var(--cyan),#91a2ff);
-  box-shadow:0 8px 30px #55e6ff20;
+background:linear-gradient(135deg,#55e6ff,#9c8cff);
+color:#061019;
 }
-
-.primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 35px #55e6ff40;
-}
-
-.primary:disabled{
-  opacity:.4;
-  cursor:not-allowed;
-  transform:none;
-}
-
+.primary:hover,.secondary:hover{transform:translateY(-2px)}
+.primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .secondary{
-  color:white;
-  background:#11182c;
-  border:1px solid #2c3966;
+background:#11182c;color:white;border:1px solid #30406d;
 }
-
-.secondary:hover{
-  border-color:#687fd4;
-}
-
-/* HERO */
-
 .hero{
-  max-width:1100px;
-  margin:auto;
-  padding:90px 24px 55px;
-  text-align:center;
+max-width:1050px;margin:auto;text-align:center;padding:90px 22px 45px;
 }
-
 .badge{
-  display:inline-block;
-  padding:8px 14px;
-  border:1px solid #415184;
-  background:#101831;
-  border-radius:999px;
-  color:#b9caff;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:1.5px;
+display:inline-block;border:1px solid #425286;background:#101831;
+padding:8px 14px;border-radius:999px;color:#bdcbff;
+font-size:11px;font-weight:900;letter-spacing:1.4px;
 }
-
-.hero h1{
-  max-width:900px;
-  margin:24px auto 20px;
-  font-size:clamp(45px,7vw,82px);
-  line-height:1;
-  letter-spacing:-4px;
+h1{
+font-size:clamp(45px,7vw,80px);line-height:1;
+letter-spacing:-4px;max-width:900px;margin:24px auto 18px;
 }
-
-.gradient{
-  background:linear-gradient(90deg,#fff,var(--cyan),#b994ff);
-  -webkit-background-clip:text;
-  color:transparent;
+.grad{
+background:linear-gradient(90deg,#fff,#55e6ff,#ba91ff);
+-webkit-background-clip:text;color:transparent;
 }
-
-.hero p{
-  max-width:720px;
-  margin:auto;
-  color:var(--muted);
-  line-height:1.7;
-  font-size:18px;
-}
-
-.actions{
-  margin-top:30px;
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.actions a{text-decoration:none}
-
-/* FLOW */
-
-.flow{
-  max-width:850px;
-  margin:10px auto 65px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
-  padding:0 20px;
-}
-
-.flowbox{
-  flex:1;
-  text-align:center;
-  padding:16px 8px;
-  background:#0c1224aa;
-  border:1px solid #26345c;
-  border-radius:13px;
-  color:#c6d0ed;
-  font-size:12px;
-  font-weight:800;
-}
-
-.arrow{color:var(--cyan)}
-
-/* CARDS */
+.hero p{max-width:700px;margin:auto;color:#929dbc;line-height:1.7;font-size:18px}
+.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
 
 .features{
-  max-width:1100px;
-  margin:auto;
-  padding:0 24px 80px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
+max-width:1050px;margin:30px auto 70px;padding:0 22px;
+display:grid;grid-template-columns:repeat(3,1fr);gap:15px;
 }
-
 .card{
-  background:linear-gradient(180deg,#10172bdd,#090e1bdd);
-  border:1px solid #25315a;
-  border-radius:20px;
-  padding:24px;
-  box-shadow:0 20px 60px #0005;
-  backdrop-filter:blur(12px);
+background:linear-gradient(180deg,#10172bdd,#090e1bdd);
+border:1px solid #27345c;border-radius:20px;padding:23px;
+box-shadow:0 20px 60px #0005;
 }
-
+.card p{color:#929dbc;line-height:1.6}
 .icon{
-  width:45px;
-  height:45px;
-  display:grid;
-  place-items:center;
-  border-radius:13px;
-  background:#132248;
-  border:1px solid #334c84;
-  font-size:21px;
+width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+background:#142348;border:1px solid #344d84;font-size:20px;
 }
-
-.card h3{margin:16px 0 9px}
-
-.card p{
-  color:var(--muted);
-  line-height:1.6;
-  font-size:14px;
-}
-
-/* SCANNER */
-
-.scanner{
-  max-width:1050px;
-  margin:auto;
-  padding:50px 24px 100px;
-}
-
-.title{
-  text-align:center;
-  margin-bottom:27px;
-}
-
-.title h2{
-  font-size:38px;
-  margin:10px 0;
-}
-
-.title p{color:var(--muted)}
-
+.scanSection{max-width:1000px;margin:auto;padding:45px 22px 100px}
+.title{text-align:center;margin-bottom:25px}
+.title h2{font-size:38px;margin:10px}
+.title p{color:#929dbc}
 .scanCard{
-  background:#090e1ddd;
-  border:1px solid #29365e;
-  border-radius:22px;
-  padding:20px;
-  box-shadow:0 25px 80px #0007;
+background:#090e1ddd;border:1px solid #29365e;border-radius:22px;
+padding:20px;box-shadow:0 25px 80px #0007;
 }
-
 .upload{
-  min-height:310px;
-  border:1px dashed #52689c;
-  border-radius:18px;
-  display:grid;
-  place-items:center;
-  text-align:center;
-  padding:35px;
-  background:#080d19;
-  transition:.2s;
+min-height:310px;border:1px dashed #52699d;border-radius:18px;
+display:grid;place-items:center;text-align:center;padding:35px;background:#080d19;
 }
-
-.upload.drag{
-  background:#0c1930;
-  border-color:var(--cyan);
-}
-
-.uploadIcon{
-  font-size:45px;
-  margin-bottom:12px;
-}
-
+.upload.drag{border-color:#55e6ff;background:#0c1930}
 .upload h2{margin-bottom:8px}
-
-.upload p{
-  color:var(--muted);
-  margin-bottom:22px;
-}
-
+.upload p{color:#929dbc}
+.uploadIcon{font-size:48px}
 input[type=file]{display:none}
 
-/* PREVIEW */
-
-.previewArea{
-  display:none;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-}
-
+.previewArea{display:none;grid-template-columns:1fr 1fr;gap:20px}
 .imageBox{
-  min-height:390px;
-  border-radius:16px;
-  overflow:hidden;
-  background:#030610;
-  display:grid;
-  place-items:center;
-  position:relative;
+min-height:390px;background:#030610;border-radius:16px;
+display:grid;place-items:center;position:relative;overflow:hidden;
 }
-
-.imageBox img{
-  width:100%;
-  max-height:450px;
-  object-fit:contain;
-}
-
+.imageBox img{max-width:100%;max-height:450px;object-fit:contain}
 .scanline{
-  display:none;
-  position:absolute;
-  left:0;
-  right:0;
-  height:2px;
-  background:var(--cyan);
-  box-shadow:0 0 20px var(--cyan);
-  animation:scan 1.5s linear infinite;
+display:none;position:absolute;left:0;right:0;height:2px;
+background:#55e6ff;box-shadow:0 0 20px #55e6ff;
+animation:scan 1.5s linear infinite;
 }
+@keyframes scan{from{top:2%}to{top:98%}}
 
-@keyframes scan{
-  0%{top:2%}
-  100%{top:98%}
-}
-
-.info{
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-}
-
-.info h2{margin-top:8px}
-
-.small{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-}
-
-.metadata{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
-}
-
+.info{display:flex;flex-direction:column;gap:14px}
+.small{font-size:13px;color:#929dbc;line-height:1.5}
+.metadata{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .metadata div{
-  padding:13px;
-  border-radius:11px;
-  background:#0d1428;
-  border:1px solid #202e52;
-  overflow:hidden;
+background:#0d1428;border:1px solid #202e52;border-radius:11px;padding:13px;
 }
-
-.metadata b{
-  display:block;
-  font-size:10px;
-  color:#7f8cab;
-  margin-bottom:5px;
-}
-
-.metadata span{
-  font-size:13px;
-  word-break:break-word;
-}
-
+.metadata b{display:block;font-size:10px;color:#7f8cab;margin-bottom:5px}
+.metadata span{font-size:13px;word-break:break-word}
 .consent{
-  display:flex;
-  gap:10px;
-  padding:14px;
-  background:#0c1428;
-  border:1px solid #293760;
-  border-radius:12px;
-  font-size:12px;
-  color:#c0c9e1;
-  line-height:1.5;
+display:flex;gap:10px;padding:14px;background:#0c1428;
+border:1px solid #293760;border-radius:12px;font-size:12px;
+color:#c0c9e1;line-height:1.5;
 }
-
-.consent input{
-  accent-color:var(--cyan);
-  width:17px;
-}
-
-/* STATUS */
+.consent input{accent-color:#55e6ff}
 
 .status{
-  display:none;
-  margin-top:20px;
-  padding:20px;
-  border-radius:14px;
-  background:#0b1224;
-  border:1px solid #26345a;
+display:none;margin-top:20px;padding:20px;background:#0b1224;
+border:1px solid #26345a;border-radius:14px;
 }
-
-.statusTop{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:12px;
-}
-
-.progress{
-  height:8px;
-  background:#161d32;
-  border-radius:999px;
-  overflow:hidden;
-}
-
+.progress{height:8px;background:#161d32;border-radius:99px;overflow:hidden}
 .progress span{
-  display:block;
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,var(--cyan),var(--purple));
-  transition:.4s;
+height:100%;display:block;width:0;
+background:linear-gradient(90deg,#55e6ff,#a56cff);transition:.4s;
 }
 
-/* RESULTS */
-
-.results{
-  display:none;
-  margin-top:20px;
+.results{display:none;margin-top:20px}
+.searchBox{
+text-align:center;padding:35px 20px;border-radius:18px;
+background:linear-gradient(135deg,#101c39,#17122f);
+border:1px solid #46558b;
 }
-
-.results h2{margin-bottom:15px}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:15px;
+.searchBox h2{font-size:30px;margin:10px}
+.searchBox p{
+color:#a8b3d0;max-width:620px;margin:0 auto 20px;line-height:1.6;
 }
-
-.stat{
-  padding:16px;
-  text-align:center;
-  border-radius:13px;
-  background:#0d1428;
-  border:1px solid #243158;
+.tineye{
+font-size:16px;padding:16px 26px;
+background:linear-gradient(135deg,#55e6ff,#7b91ff);
+color:#061019;
 }
-
-.stat strong{
-  display:block;
-  font-size:25px;
+.steps{
+margin:22px auto 0;max-width:600px;text-align:left;
+background:#080e1d;border:1px solid #26345a;border-radius:14px;padding:18px;
 }
-
-.stat span{
-  color:var(--muted);
-  font-size:10px;
-  font-weight:800;
-}
-
-.notice{
-  padding:20px;
-  border-radius:14px;
-  border:1px solid #514878;
-  background:linear-gradient(135deg,#16142b,#10142a);
-  line-height:1.6;
-}
-
-.notice strong{
-  color:#d8c9ff;
-  font-size:17px;
-}
-
-/* EXTRA */
-
+.steps div{padding:8px;color:#b8c3de;font-size:14px}
 .about{
-  max-width:1050px;
-  margin:auto;
-  padding:0 24px 90px;
+max-width:1000px;margin:auto;padding:0 22px 90px;
+display:grid;grid-template-columns:1fr 1fr;gap:15px;
 }
-
-.aboutGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-}
-
-.about h2{
-  font-size:32px;
-  margin-bottom:12px;
-}
-
-footer{
-  padding:30px;
-  border-top:1px solid #ffffff10;
-  text-align:center;
-  color:#7180a4;
-  font-size:12px;
-}
-
-/* CAMERA */
+footer{text-align:center;border-top:1px solid #ffffff10;padding:30px;color:#7180a4;font-size:12px}
 
 .modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:#000d;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+display:none;position:fixed;inset:0;background:#000d;z-index:100;
+align-items:center;justify-content:center;padding:20px;
 }
-
 .modal.open{display:flex}
-
 .modalbox{
-  width:min(700px,100%);
-  background:#0a1020;
-  border:1px solid #35436f;
-  border-radius:20px;
-  padding:20px;
+width:min(700px,100%);background:#0a1020;border:1px solid #35436f;
+border-radius:20px;padding:20px;
 }
-
-.modalbox video{
-  width:100%;
-  max-height:60vh;
-  margin-top:15px;
-  background:#000;
-  border-radius:14px;
-}
-
-/* MOBILE */
+.modal video{width:100%;max-height:60vh;background:black;border-radius:14px}
 
 @media(max-width:800px){
-  .links{display:none}
-  .features{grid-template-columns:1fr}
-  .previewArea{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr 1fr}
-  .aboutGrid{grid-template-columns:1fr}
-  .flow{flex-wrap:wrap}
-  .flowbox{min-width:40%}
-  .arrow{display:none}
-  .hero{padding-top:55px}
-  .hero h1{letter-spacing:-2px}
+.links{display:none}
+.features,.about{grid-template-columns:1fr}
+.previewArea{grid-template-columns:1fr}
+h1{letter-spacing:-2px}
 }
 </style>
 </head>
@@ -552,842 +187,365 @@ footer{
 <body>
 
 <nav>
-  <div class="logo">Trace<span>Lens</span></div>
-
-  <div class="links">
-    <a href="#">Home</a>
-    <a href="#scan">Scan</a>
-    <a href="#privacy">Privacy</a>
-    <a href="#about">About</a>
-  </div>
-
-  <button class="primary"
-    onclick="document.getElementById('scan').scrollIntoView()">
-    + New Scan
-  </button>
+<div class="logo">Trace<span>Lens</span></div>
+<div class="links">
+<a href="#">Home</a>
+<a href="#scan">Scan</a>
+<a href="#privacy">Privacy</a>
+<a href="#about">About</a>
+</div>
+<button class="primary" onclick="location.href='#scan'">+ New Scan</button>
 </nav>
 
-
-<!-- HERO -->
-
 <section class="hero">
+<div class="badge">AI • PHOTO PROTECTION</div>
+<h1>Find where your <span class="grad">photos appear online.</span></h1>
+<p>
+Check a specific photo for copies and modified versions appearing
+across publicly indexed webpages.
+</p>
 
-  <div class="badge">AI • PHOTO PROTECTION</div>
-
-  <h1>
-    Find where your
-    <span class="gradient">photos appear online.</span>
-  </h1>
-
-  <p>
-    Discover copies of a specific photo across public sources,
-    review where it appears and investigate suspicious modifications.
-  </p>
-
-  <div class="actions">
-
-    <a class="btn primary" href="#scan">
-      ⌕ Scan My Photo
-    </a>
-
-    <a class="btn secondary" href="#about">
-      How It Works
-    </a>
-
-  </div>
-
+<div class="actions">
+<a href="#scan" class="btn primary">⌕ Scan My Photo</a>
+<a href="#about" class="btn secondary">How It Works</a>
+</div>
 </section>
 
+<section class="features">
+<div class="card">
+<div class="icon">⌕</div>
+<h3>Find Copies</h3>
+<p>Search for exact and modified copies of your selected image.</p>
+</div>
 
-<!-- FLOW -->
+<div class="card">
+<div class="icon">↗</div>
+<h3>Find Sources</h3>
+<p>Review genuine webpages returned by a reverse-image search.</p>
+</div>
 
-<div class="flow">
+<div class="card">
+<div class="icon">◈</div>
+<h3>Compare Changes</h3>
+<p>Inspect cropped, resized and otherwise changed copies.</p>
+</div>
+</section>
 
-  <div class="flowbox">YOUR PHOTO</div>
-  <div class="arrow">→</div>
+<section class="scanSection" id="scan">
 
-  <div class="flowbox">VISUAL SEARCH</div>
-  <div class="arrow">→</div>
+<div class="title">
+<div class="badge">NEW SCAN</div>
+<h2>Scan Your Photo</h2>
+<p>Upload, drag, paste or capture your photo.</p>
+</div>
 
-  <div class="flowbox">FOUND ONLINE</div>
-  <div class="arrow">→</div>
+<div class="scanCard">
 
-  <div class="flowbox">REVIEW</div>
+<div class="upload" id="upload">
+<div>
+<div class="uploadIcon">⬆</div>
+<h2>Drop your photo here</h2>
+<p>JPG • JPEG • PNG • WEBP</p>
+
+<div class="actions">
+<button class="primary" onclick="fileInput.click()">Choose Photo</button>
+<button class="secondary" onclick="openCamera()">📷 Take Photo</button>
+</div>
+
+<input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp">
+</div>
+</div>
+
+<div class="previewArea" id="previewArea">
+
+<div class="imageBox">
+<img id="preview">
+<div class="scanline" id="scanline"></div>
+</div>
+
+<div class="info">
+
+<div>
+<div class="badge">PHOTO READY</div>
+<h2>Ready to search</h2>
+<p class="small">Confirm that you're allowed to check this photo.</p>
+</div>
+
+<div class="metadata">
+<div><b>FILE</b><span id="filename">—</span></div>
+<div><b>SIZE</b><span id="filesize">—</span></div>
+<div><b>TYPE</b><span id="filetype">—</span></div>
+<div><b>RESOLUTION</b><span id="resolution">—</span></div>
+</div>
+
+<label class="consent">
+<input type="checkbox" id="consent">
+<span>
+I confirm this is my photo, or I have permission from the person
+pictured to check where this specific image has been reposted.
+</span>
+</label>
+
+<div class="actions" style="justify-content:flex-start;margin-top:0">
+<button class="primary" id="start" disabled onclick="scanPhoto()">
+⌕ Start Search
+</button>
+
+<button class="secondary" onclick="removePhoto()">Remove</button>
+</div>
+
+</div>
+</div>
+
+<div class="status" id="status">
+<strong id="statusText">Preparing image...</strong>
+
+<div class="progress" style="margin-top:12px">
+<span id="bar"></span>
+</div>
+</div>
+
+<div class="results" id="results">
+
+<div class="searchBox">
+
+<div class="badge">REVERSE IMAGE SEARCH</div>
+
+<h2>Your photo is ready to search</h2>
+
+<p>
+Continue to TinEye to perform the live reverse-image search.
+Use the same photo there to view genuine matches from its web index.
+</p>
+
+<a
+class="btn tineye"
+href="https://tineye.com/"
+target="_blank"
+rel="noopener noreferrer">
+Search with TinEye ↗
+</a>
+
+<div class="steps">
+<div>① Click <b>Search with TinEye</b>.</div>
+<div>② TinEye opens in a new tab.</div>
+<div>③ Upload the same photo.</div>
+<div>④ TinEye displays the real matches it finds.</div>
+<div>⑤ Open any result to inspect the actual source webpage.</div>
+</div>
 
 </div>
 
-
-<!-- FEATURES -->
-
-<section class="features">
-
-  <div class="card">
-    <div class="icon">⌕</div>
-    <h3>Find Copies</h3>
-    <p>
-      Discover exact and near-duplicate versions of a specific photo
-      using a connected visual-search provider.
-    </p>
-  </div>
-
-  <div class="card">
-    <div class="icon">↗</div>
-    <h3>Review Sources</h3>
-    <p>
-      Open the actual public webpage where a matching copy
-      was discovered.
-    </p>
-  </div>
-
-  <div class="card">
-    <div class="icon">◈</div>
-    <h3>Check Manipulation</h3>
-    <p>
-      Analyze supported copies for indicators of possible
-      image manipulation.
-    </p>
-  </div>
-
+</div>
+</div>
 </section>
-
-
-<!-- SCAN -->
-
-<section class="scanner" id="scan">
-
-  <div class="title">
-
-    <div class="badge">NEW SCAN</div>
-
-    <h2>Scan Your Photo</h2>
-
-    <p>
-      Upload, drag and drop, paste or capture a photo.
-    </p>
-
-  </div>
-
-
-  <div class="scanCard">
-
-
-    <!-- UPLOAD -->
-
-    <div class="upload" id="upload">
-
-      <div>
-
-        <div class="uploadIcon">⬆</div>
-
-        <h2>Drop your photo here</h2>
-
-        <p>
-          JPG • JPEG • PNG • WEBP
-        </p>
-
-        <div class="actions">
-
-          <button class="primary"
-            onclick="document.getElementById('fileInput').click()">
-            Choose Photo
-          </button>
-
-          <button class="secondary"
-            onclick="openCamera()">
-            📷 Take Photo
-          </button>
-
-        </div>
-
-        <input
-          id="fileInput"
-          type="file"
-          accept="image/jpeg,image/png,image/webp">
-
-      </div>
-
-    </div>
-
-
-    <!-- PREVIEW -->
-
-    <div class="previewArea" id="previewArea">
-
-      <div class="imageBox">
-
-        <img id="preview">
-
-        <div
-          class="scanline"
-          id="scanline">
-        </div>
-
-      </div>
-
-
-      <div class="info">
-
-        <div>
-
-          <div class="badge">
-            PHOTO READY
-          </div>
-
-          <h2>Ready to check</h2>
-
-          <p class="small">
-            Review your image before starting.
-          </p>
-
-        </div>
-
-
-        <div class="metadata">
-
-          <div>
-            <b>FILE</b>
-            <span id="filename">—</span>
-          </div>
-
-          <div>
-            <b>SIZE</b>
-            <span id="filesize">—</span>
-          </div>
-
-          <div>
-            <b>TYPE</b>
-            <span id="filetype">—</span>
-          </div>
-
-          <div>
-            <b>RESOLUTION</b>
-            <span id="resolution">—</span>
-          </div>
-
-        </div>
-
-
-        <label class="consent">
-
-          <input
-            type="checkbox"
-            id="consent">
-
-          <span>
-            I confirm this is my photo, or I have permission
-            from the person pictured to check where this
-            specific image has been reposted.
-          </span>
-
-        </label>
-
-
-        <div
-          class="actions"
-          style="justify-content:flex-start;margin-top:0">
-
-          <button
-            class="primary"
-            id="start"
-            disabled
-            onclick="scanPhoto()">
-
-            ⌕ Start Search
-
-          </button>
-
-          <button
-            class="secondary"
-            onclick="removePhoto()">
-
-            Remove
-
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- STATUS -->
-
-    <div class="status" id="status">
-
-      <div class="statusTop">
-
-        <strong id="statusText">
-          Preparing image...
-        </strong>
-
-        <span id="percent">
-          0%
-        </span>
-
-      </div>
-
-      <div class="progress">
-        <span id="bar"></span>
-      </div>
-
-    </div>
-
-
-    <!-- RESULTS -->
-
-    <div class="results" id="results">
-
-      <h2>Found Online</h2>
-
-
-      <div class="stats">
-
-        <div class="stat">
-          <strong>0</strong>
-          <span>MATCHES FOUND</span>
-        </div>
-
-        <div class="stat">
-          <strong>0</strong>
-          <span>AUTHORIZED</span>
-        </div>
-
-        <div class="stat">
-          <strong>0</strong>
-          <span>UNAUTHORIZED</span>
-        </div>
-
-        <div class="stat">
-          <strong>0</strong>
-          <span>NOT REVIEWED</span>
-        </div>
-
-      </div>
-
-
-      <div class="notice">
-
-        <strong>
-          ⚙ Image Search Not Configured
-        </strong>
-
-        <br><br>
-
-        TraceLens is ready for a real visual-search provider.
-
-        This demo intentionally does not create fake search
-        results, fake social-media matches or invented URLs.
-
-        <br><br>
-
-        Once a legitimate provider is connected, genuine results
-        can appear here with:
-
-        <br><br>
-
-        <b>
-          OPEN SOURCE ↗ &nbsp; • &nbsp;
-          MARK AUTHORIZED &nbsp; • &nbsp;
-          MARK UNAUTHORIZED &nbsp; • &nbsp;
-          CHECK MANIPULATION
-        </b>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ABOUT -->
 
 <section class="about" id="about">
 
-  <div class="aboutGrid">
+<div class="card">
+<div class="badge">ABOUT</div>
+<h2>Protect your digital image.</h2>
+<p>
+TraceLens provides a privacy-focused workflow for investigating
+copies of a specific photo you are authorized to check.
+</p>
+</div>
 
-    <div class="card">
-
-      <div class="badge">
-        ABOUT TRACELENS
-      </div>
-
-      <h2 style="margin-top:15px">
-        Protect your digital image.
-      </h2>
-
-      <p>
-        TraceLens is a privacy-focused concept designed to help
-        users investigate where a specific photo may have been
-        copied or reposted online.
-      </p>
-
-    </div>
-
-
-    <div class="card" id="privacy">
-
-      <div class="badge">
-        PRIVACY FIRST
-      </div>
-
-      <h2 style="margin-top:15px">
-        Built around consent.
-      </h2>
-
-      <p>
-        TraceLens is designed for photos users own or have
-        permission to check. It does not identify unknown
-        private individuals or search for unrelated photos
-        solely by someone's face.
-      </p>
-
-    </div>
-
-  </div>
+<div class="card" id="privacy">
+<div class="badge">PRIVACY</div>
+<h2>Search with consent.</h2>
+<p>
+TraceLens is designed for your own photos or photos you have
+permission to check. It is not designed to identify unknown people
+or locate unrelated photographs solely from a person's face.
+</p>
+</div>
 
 </section>
 
+<div class="modal" id="cameraModal">
+<div class="modalbox">
 
-<!-- CAMERA -->
+<h2>Take Photo</h2>
 
-<div
-  class="modal"
-  id="cameraModal">
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas" style="display:none"></canvas>
 
-  <div class="modalbox">
-
-    <h2>Take Photo</h2>
-
-    <p class="small">
-      Allow camera access when your browser asks.
-    </p>
-
-    <video
-      id="video"
-      autoplay
-      playsinline>
-    </video>
-
-    <canvas
-      id="canvas"
-      style="display:none">
-    </canvas>
-
-
-    <div class="actions">
-
-      <button
-        class="primary"
-        onclick="capturePhoto()">
-
-        📷 Capture
-
-      </button>
-
-      <button
-        class="secondary"
-        onclick="closeCamera()">
-
-        Cancel
-
-      </button>
-
-    </div>
-
-  </div>
-
+<div class="actions">
+<button class="primary" onclick="capturePhoto()">📷 Capture</button>
+<button class="secondary" onclick="closeCamera()">Cancel</button>
 </div>
 
+</div>
+</div>
 
-<footer>
-
-  TraceLens • Privacy-focused photo protection
-
-</footer>
-
+<footer>TraceLens • Privacy-focused photo protection</footer>
 
 <script>
 
-const fileInput =
-document.getElementById("fileInput");
+const fileInput=document.getElementById("fileInput");
+const upload=document.getElementById("upload");
+const previewArea=document.getElementById("previewArea");
+const preview=document.getElementById("preview");
+const consent=document.getElementById("consent");
+const start=document.getElementById("start");
 
-const upload =
-document.getElementById("upload");
+let stream=null;
 
-const previewArea =
-document.getElementById("previewArea");
-
-const preview =
-document.getElementById("preview");
-
-const consent =
-document.getElementById("consent");
-
-const start =
-document.getElementById("start");
-
-let stream = null;
-
-
-/* FILE PICKER */
-
-fileInput.addEventListener(
-"change",
-function(){
-
-if(fileInput.files[0]){
-loadPhoto(fileInput.files[0]);
-}
-
+fileInput.addEventListener("change",()=>{
+if(fileInput.files[0]) loadPhoto(fileInput.files[0]);
 });
 
-
-/* CONSENT */
-
-consent.addEventListener(
-"change",
-function(){
-
-start.disabled = !consent.checked;
-
+consent.addEventListener("change",()=>{
+start.disabled=!consent.checked;
 });
 
-
-/* DRAG DROP */
-
-upload.addEventListener(
-"dragover",
-function(e){
-
+upload.addEventListener("dragover",e=>{
 e.preventDefault();
 upload.classList.add("drag");
-
 });
 
-
-upload.addEventListener(
-"dragleave",
-function(){
-
+upload.addEventListener("dragleave",()=>{
 upload.classList.remove("drag");
-
 });
 
-
-upload.addEventListener(
-"drop",
-function(e){
-
+upload.addEventListener("drop",e=>{
 e.preventDefault();
-
 upload.classList.remove("drag");
-
-if(e.dataTransfer.files[0]){
-loadPhoto(e.dataTransfer.files[0]);
-}
-
+if(e.dataTransfer.files[0]) loadPhoto(e.dataTransfer.files[0]);
 });
 
-
-/* PASTE IMAGE */
-
-document.addEventListener(
-"paste",
-function(e){
-
+document.addEventListener("paste",e=>{
 for(const item of e.clipboardData.items){
-
 if(item.type.startsWith("image/")){
-
-const file =
-item.getAsFile();
-
-loadPhoto(file);
-
+loadPhoto(item.getAsFile());
 break;
-
 }
-
 }
-
 });
-
-
-/* LOAD IMAGE */
 
 function loadPhoto(file){
 
 if(!file.type.startsWith("image/")){
-
-alert("Please choose an image file.");
-
+alert("Please choose an image.");
 return;
-
 }
 
-const url =
-URL.createObjectURL(file);
+const url=URL.createObjectURL(file);
 
-preview.src = url;
+preview.src=url;
 
-preview.onload =
-function(){
-
-document.getElementById("resolution")
-.textContent =
-preview.naturalWidth +
-" × " +
-preview.naturalHeight;
-
+preview.onload=()=>{
+document.getElementById("resolution").textContent=
+preview.naturalWidth+" × "+preview.naturalHeight;
 };
 
-document.getElementById("filename")
-.textContent =
-file.name || "Camera Photo";
+document.getElementById("filename").textContent=file.name||"Camera photo";
+document.getElementById("filesize").textContent=(file.size/1024/1024).toFixed(2)+" MB";
+document.getElementById("filetype").textContent=file.type.replace("image/","").toUpperCase();
 
-document.getElementById("filesize")
-.textContent =
-(file.size / 1024 / 1024)
-.toFixed(2) + " MB";
-
-document.getElementById("filetype")
-.textContent =
-file.type
-.replace("image/","")
-.toUpperCase();
-
-upload.style.display = "none";
-
-previewArea.style.display = "grid";
-
-document.getElementById("results")
-.style.display = "none";
-
+upload.style.display="none";
+previewArea.style.display="grid";
+results.style.display="none";
 }
-
-
-/* REMOVE */
 
 function removePhoto(){
 
-preview.src = "";
+preview.src="";
+fileInput.value="";
+previewArea.style.display="none";
+upload.style.display="grid";
 
-fileInput.value = "";
+consent.checked=false;
+start.disabled=true;
 
-previewArea.style.display =
-"none";
-
-upload.style.display =
-"grid";
-
-consent.checked =
-false;
-
-start.disabled =
-true;
-
-document.getElementById("status")
-.style.display =
-"none";
-
-document.getElementById("results")
-.style.display =
-"none";
-
+status.style.display="none";
+results.style.display="none";
 }
-
-
-/* SCAN ANIMATION */
 
 async function scanPhoto(){
 
-const status =
-document.getElementById("status");
+const status=document.getElementById("status");
+const statusText=document.getElementById("statusText");
+const bar=document.getElementById("bar");
+const line=document.getElementById("scanline");
 
-const text =
-document.getElementById("statusText");
+status.style.display="block";
+line.style.display="block";
 
-const bar =
-document.getElementById("bar");
-
-const percent =
-document.getElementById("percent");
-
-const scanline =
-document.getElementById("scanline");
-
-status.style.display =
-"block";
-
-scanline.style.display =
-"block";
-
-
-const steps = [
-
-["Preparing image...",20],
-
-["Generating visual fingerprint...",45],
-
-["Checking visual-search configuration...",70],
-
-["Preparing results...",100]
-
+const steps=[
+["Preparing photo...",25],
+["Generating visual fingerprint...",50],
+["Preparing reverse-image search...",75],
+["Ready for live search...",100]
 ];
 
+for(const s of steps){
 
-for(const step of steps){
+statusText.textContent=s[0];
+bar.style.width=s[1]+"%";
 
-text.textContent =
-step[0];
-
-bar.style.width =
-step[1] + "%";
-
-percent.textContent =
-step[1] + "%";
-
-await wait(650);
-
+await new Promise(r=>setTimeout(r,500));
 }
 
+line.style.display="none";
+statusText.textContent="Ready";
 
-scanline.style.display =
-"none";
+results.style.display="block";
 
-text.textContent =
-"Scan complete";
-
-document.getElementById("results")
-.style.display =
-"block";
-
-document.getElementById("results")
-.scrollIntoView({
-behavior:"smooth"
-});
-
+results.scrollIntoView({behavior:"smooth"});
 }
-
-
-function wait(ms){
-
-return new Promise(
-resolve =>
-setTimeout(resolve,ms)
-);
-
-}
-
-
-/* CAMERA */
 
 async function openCamera(){
 
 try{
 
-stream =
-await navigator.mediaDevices
-.getUserMedia({
-
-video:{
-facingMode:"user"
-},
-
+stream=await navigator.mediaDevices.getUserMedia({
+video:{facingMode:"user"},
 audio:false
-
 });
 
+video.srcObject=stream;
+cameraModal.classList.add("open");
 
-document.getElementById("video")
-.srcObject =
-stream;
+}catch(e){
 
-
-document.getElementById("cameraModal")
-.classList.add("open");
-
-}
-
-catch(error){
-
-alert(
-"Camera could not open. Allow camera permission, or use Choose Photo."
-);
+alert("Allow camera access or use Choose Photo.");
 
 }
 
 }
-
 
 function closeCamera(){
 
 if(stream){
-
-stream
-.getTracks()
-.forEach(
-track =>
-track.stop()
-);
-
+stream.getTracks().forEach(track=>track.stop());
 }
 
-document.getElementById("cameraModal")
-.classList.remove("open");
-
+cameraModal.classList.remove("open");
 }
-
-
-/* CAPTURE */
 
 function capturePhoto(){
 
-const video =
-document.getElementById("video");
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
 
-const canvas =
-document.getElementById("canvas");
-
-canvas.width =
-video.videoWidth;
-
-canvas.height =
-video.videoHeight;
-
-const ctx =
-canvas.getContext("2d");
-
-ctx.drawImage(
-video,
-0,
-0,
-canvas.width,
-canvas.height
+canvas.getContext("2d").drawImage(
+video,0,0,canvas.width,canvas.height
 );
 
+canvas.toBlob(blob=>{
 
-canvas.toBlob(
-function(blob){
-
-const file =
-new File(
+const file=new File(
 [blob],
 "camera-photo.jpg",
 {type:"image/jpeg"}
 );
 
 loadPhoto(file);
-
 closeCamera();
 
-},
-"image/jpeg",
-0.92
-);
+},"image/jpeg",0.92);
 
 }
 
