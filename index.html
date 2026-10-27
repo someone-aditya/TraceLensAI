@@ -12,9 +12,15 @@ window.va=window.va||function(){
   (window.vaq=window.vaq||[]).push(arguments);
 };
 </script>
-<script defer src="/_vercel/insights/script.js"></script>
+<script>
+if(!["localhost","127.0.0.1","::1"].includes(location.hostname)){
+  const analyticsScript=document.createElement("script");
+  analyticsScript.defer=true;
+  analyticsScript.src="/_vercel/insights/script.js";
+  document.head.appendChild(analyticsScript);
+}
+</script>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
 
@@ -32,15 +38,73 @@ window.va=window.va||function(){
   --muted:#8996ad;
 }
 
+.hero-upload{
+  width:min(760px,100%);
+  min-height:210px;
+  margin:34px auto 0;
+  padding:25px;
+  border:1px solid rgba(115,183,219,.28);
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(13,25,40,.88),rgba(7,12,22,.82));
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 25px 80px rgba(0,0,0,.32);
+  backdrop-filter:blur(20px);
+  position:relative;
+  overflow:hidden;
+}
+
+.hero-upload:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0,rgba(99,194,225,.12),transparent 65%);
+}
+
+.hero-upload-content{
+  position:relative;
+  z-index:1;
+}
+
+.hero-upload h2{
+  margin:0 0 8px;
+  font-size:clamp(20px,3vw,27px);
+}
+
+.hero-upload p{
+  font-size:13px;
+}
+
+.hero-upload-actions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:20px;
+}
+
+.hero-upload .upload-hint{
+  margin-top:13px;
+  font-size:10px;
+  color:#77869c;
+}
+
+.hero-upload.drag{
+  border-color:var(--cyan);
+  box-shadow:0 0 40px rgba(104,223,244,.1),inset 0 0 40px rgba(104,223,244,.06);
+}
+
 *{box-sizing:border-box}
 
 html{
   scroll-behavior:smooth;
+  background:var(--bg);
 }
 
 body{
   margin:0;
-  background:var(--bg);
+  background:transparent;
   color:var(--text);
   font-family:Inter,Segoe UI,Arial,sans-serif;
   overflow-x:hidden;
@@ -174,7 +238,7 @@ a{text-decoration:none;color:inherit}
 }
 
 .btn:hover{
-  transform:translateY(-3px);
+  transform:translate3d(var(--mag-x,0px),calc(var(--mag-y,0px) - 3px),0);
 }
 
 .section-title{
@@ -259,7 +323,7 @@ nav{
 .hero-content{
   width:min(1100px,calc(100% - 36px));
   text-align:center;
-  padding-top:80px;
+  padding:125px 0 105px;
 }
 
 .hero h1{
@@ -472,7 +536,17 @@ nav{
   50%{transform:scale(1.12);opacity:.25}
 }
 
-#fileInput{display:none}
+#fileInput{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
 
 .preview-layout{
   display:none;
@@ -620,6 +694,7 @@ button:disabled{
 .results{
   display:none;
   padding:5px 18px 25px;
+  scroll-margin-top:90px;
 }
 
 .results-header{
@@ -661,12 +736,12 @@ button:disabled{
 
 .result-grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));
   gap:12px;
 }
 
 .result-card{
-  padding:15px;
+  padding:18px;
   border:1px solid #1d2d45;
   border-radius:16px;
   background:#07101b;
@@ -679,7 +754,7 @@ button:disabled{
 }
 
 .result-thumb{
-  height:190px;
+  height:clamp(210px,28vw,360px);
   overflow:hidden;
   display:grid;
   place-items:center;
@@ -1026,6 +1101,315 @@ footer{
     animation-iteration-count:1!important;
   }
 }
+
+/* Interaction surfaces */
+ .scanner, .world-card, .feature, .discovery-card, .faq-list, footer,
+.hero-content, .final .container, .giant h2{
+  position:relative;
+  z-index:1;
+}
+
+#world{z-index:-1}
+.vignette,.noise,.cursor-light{z-index:0}
+
+.hero,.discovery-strip,.scanner-section,.world-section,.giant,.features,.faq,.final,footer{
+  position:relative;
+  z-index:1;
+}
+
+.hero-upload,
+.scanner,
+.world-card,
+.feature,
+.discovery-card,
+.result-card,
+.account-dialog,
+.scroll-hud{
+  border-color:rgba(125,180,220,.2);
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 20px 70px rgba(0,0,0,.26);
+}
+
+.btn, .result-tab, .faq-question, .account-close, .account-switch{
+  -webkit-tap-highlight-color:transparent;
+}
+
+.btn:active{
+  transform:translate3d(var(--mag-x,0px),calc(var(--mag-y,0px) + 1px),0) scale(.985);
+}
+
+.drop-zone,
+.hero-upload{
+  transition:border-color .25s,box-shadow .25s,transform .25s;
+}
+
+.scanner.is-searching{
+  border-color:rgba(104,223,244,.55);
+  box-shadow:0 0 45px rgba(84,199,228,.1),0 50px 150px rgba(0,0,0,.55);
+  animation:scannerPulse 1.7s ease-in-out infinite;
+}
+
+@keyframes scannerPulse{
+  50%{box-shadow:0 0 58px rgba(84,199,228,.18),0 50px 150px rgba(0,0,0,.55)}
+}
+
+.result-card{
+  min-height:220px;
+  display:flex;
+  flex-direction:column;
+}
+
+.result-card h3{
+  font-size:19px;
+  line-height:1.35;
+  margin:12px 0 0;
+}
+
+.result-card .btn{
+  align-self:flex-start;
+  margin-top:auto;
+}
+
+.result-tabs[hidden]{display:none}
+
+.scroll-hud{
+  position:fixed;
+  z-index:1100;
+  left:50%;
+  bottom:14px;
+  width:min(790px,calc(100% - 24px));
+  min-height:58px;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:8px 13px;
+  border:1px solid rgba(125,180,220,.25);
+  border-radius:16px;
+  background:rgba(5,10,18,.84);
+  backdrop-filter:blur(22px);
+}
+
+.hud-sections{
+  position:static;
+  inset:auto;
+  z-index:auto;
+  width:auto;
+  height:auto;
+  border:0;
+  background:none;
+  backdrop-filter:none;
+  min-width:0;
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:5px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.hud-sections::-webkit-scrollbar{display:none}
+
+.hud-sections a{
+  padding:8px 7px;
+  white-space:nowrap;
+  color:#8290a8;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.8px;
+}
+
+.hud-sections a:hover,
+.hud-sections a.active{color:#eaf8ff}
+
+.hud-progress{
+  width:75px;
+  flex:none;
+  color:#aab8ca;
+  font-size:10px;
+  text-align:right;
+}
+
+.hud-progress b{
+  display:block;
+  margin-bottom:5px;
+  color:#dce7f4;
+  font-size:10px;
+}
+
+.hud-progress span{
+  display:block;
+  height:2px;
+  overflow:hidden;
+  border-radius:4px;
+  background:#1b2a3c;
+}
+
+.hud-progress i{
+  display:block;
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));
+}
+
+.account-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.account-actions .btn{
+  min-height:38px;
+  padding:0 13px;
+  font-size:11px;
+}
+
+.account-dialog{
+  width:min(460px,calc(100% - 28px));
+  max-height:min(90vh,760px);
+  padding:0;
+  border:1px solid rgba(125,180,220,.3);
+  border-radius:23px;
+  color:var(--text);
+  background:rgba(7,13,23,.96);
+  backdrop-filter:blur(24px);
+}
+
+.account-dialog::backdrop{
+  background:rgba(0,3,9,.76);
+  backdrop-filter:blur(5px);
+}
+
+.account-panel{padding:27px}
+
+.account-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.account-header h2{
+  margin:9px 0;
+  font-size:29px;
+}
+
+.account-close{
+  width:36px;
+  height:36px;
+  border:1px solid #293a50;
+  border-radius:50%;
+  background:#0b1522;
+  color:#c8d4e4;
+  font-size:19px;
+}
+
+.account-note{
+  color:#8795aa;
+  font-size:12px;
+  line-height:1.65;
+}
+
+.account-switch{
+  display:flex;
+  gap:6px;
+  margin:21px 0;
+  padding:5px;
+  border:1px solid #1e2d41;
+  border-radius:12px;
+  background:#060b13;
+}
+
+.account-switch button{
+  flex:1;
+  min-height:38px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#8795aa;
+  font-size:12px;
+  font-weight:750;
+}
+
+.account-switch button[aria-selected="true"]{
+  background:#172638;
+  color:#f0f7ff;
+}
+
+.account-form[hidden]{display:none}
+
+.account-form label{
+  display:block;
+  margin:13px 0 6px;
+  color:#a9b5c7;
+  font-size:11px;
+}
+
+.account-form input{
+  width:100%;
+  min-height:44px;
+  padding:0 12px;
+  border:1px solid #25374e;
+  border-radius:9px;
+  outline:none;
+  background:#080f19;
+  color:#f5f8ff;
+}
+
+.account-form input:focus{
+  border-color:#64cfe3;
+  box-shadow:0 0 0 3px rgba(100,207,227,.1);
+}
+
+.password-field{position:relative}
+.password-field input{padding-right:72px}
+
+.password-toggle{
+  position:absolute;
+  top:50%;
+  right:8px;
+  transform:translateY(-50%);
+  border:0;
+  background:transparent;
+  color:#83cddd;
+  font-size:10px;
+}
+
+.account-form .btn{
+  width:100%;
+  margin-top:19px;
+}
+
+.account-message{
+  min-height:19px;
+  margin-top:12px;
+  color:#a5c9d2;
+  font-size:11px;
+  line-height:1.55;
+}
+
+.faq-answer{
+  transition:max-height .4s ease,opacity .25s ease;
+}
+
+@media(max-width:700px){
+  .hero-content{padding:78px 0 72px}
+  .hero h1{font-size:clamp(43px,10vw,64px);line-height:.92}
+  .hero p{font-size:14px;line-height:1.65}
+  .hero-upload{min-height:0;padding:18px 15px}
+  .account-actions{gap:5px}
+  .account-actions .btn{min-height:35px;padding:0 9px;font-size:10px}
+  .scroll-hud{bottom:7px;min-height:42px;padding:4px 8px;gap:8px}
+  .hud-sections a{font-size:8px;padding:5px 5px}
+  .hud-progress{width:53px}
+}
+
+@media(max-width:450px){
+  .nav-inner{width:calc(100% - 22px)}
+  .logo{font-size:19px}
+  .account-actions .btn{min-height:33px;padding:0 7px;font-size:9px}
+  .scroll-hud{width:calc(100% - 12px)}
+  .hud-sections{justify-content:flex-start}
+}
 </style>
 </head>
 
@@ -1050,16 +1434,17 @@ footer{
       <a href="#faq">FAQ</a>
     </div>
 
-    <a href="#search" class="btn btn-primary">
-      Search Image
-    </a>
+    <div class="account-actions">
+      <button type="button" class="btn btn-secondary" data-account-open="login">Login</button>
+      <button type="button" class="btn btn-primary" data-account-open="signup">Sign Up</button>
+    </div>
 
   </div>
 </nav>
 
 <!-- HERO -->
 
-<section class="hero">
+<section class="hero" id="home">
 
   <div class="hero-content">
 
@@ -1079,14 +1464,17 @@ footer{
       useful information about places and objects.
     </p>
 
-    <div class="hero-buttons">
-      <a href="#search" class="btn btn-primary">
-        ⌕ Search an Image
-      </a>
-
-      <a href="#discover" class="btn btn-secondary">
-        Explore TraceLens
-      </a>
+    <div class="hero-upload" id="heroDropZone">
+      <div class="hero-upload-content">
+        <div class="eyebrow">START WITH A PICTURE</div>
+        <h2>Bring an image. Explore what connects.</h2>
+        <p>Products, places, objects, artwork and photos — start a visual search in seconds.</p>
+        <div class="hero-upload-actions">
+          <label for="fileInput" class="btn btn-primary">Choose Image</label>
+          <a href="#search" class="btn btn-secondary">How it works</a>
+        </div>
+        <div class="upload-hint">JPG, PNG or WEBP · Maximum 10 MB · Your image is uploaded only when you start a search</div>
+      </div>
     </div>
 
   </div>
@@ -1215,11 +1603,7 @@ footer{
           JPG • PNG • WEBP • Maximum 10 MB
         </p>
 
-        <button
-          class="btn btn-primary"
-          onclick="document.getElementById('fileInput').click()">
-          Choose Image
-        </button>
+        <label for="fileInput" class="btn btn-primary">Choose Image</label>
 
         <input
           id="fileInput"
@@ -1310,7 +1694,7 @@ footer{
 
     </div>
 
-    <div class="status" id="status">
+    <div class="status" id="status" role="status" aria-live="polite">
 
       <div class="status-row">
         <strong id="statusText">Preparing...</strong>
@@ -1323,7 +1707,7 @@ footer{
 
     </div>
 
-    <div class="results" id="results">
+    <div class="results" id="results" aria-live="polite">
 
       <div class="results-header">
 
@@ -1338,11 +1722,7 @@ footer{
 
       </div>
 
-      <div class="result-tabs">
-        <button class="result-tab active">BEST MATCHES</button>
-        <button class="result-tab">WEB SOURCES</button>
-        <button class="result-tab">VISUAL RESULTS</button>
-      </div>
+      <div class="result-tabs" id="resultTabs" aria-label="Filter results"></div>
 
       <div id="resultContent"></div>
 
@@ -1721,6 +2101,66 @@ footer{
   TRACELENS • SEARCH THE WORLD WITH AN IMAGE
 </footer>
 
+<dialog class="account-dialog" id="accountDialog" aria-labelledby="accountTitle">
+  <div class="account-panel">
+    <div class="account-header">
+      <div>
+        <div class="eyebrow">TRACELENS ACCOUNT</div>
+        <h2 id="accountTitle">Welcome back</h2>
+      </div>
+      <button class="account-close" type="button" aria-label="Close account dialog">×</button>
+    </div>
+    <p class="account-note">Account access is a preview. Connect an authentication provider to enable real accounts; credentials are not stored or sent.</p>
+    <div class="account-switch" role="tablist" aria-label="Account action">
+      <button type="button" role="tab" id="loginTab" aria-selected="true">Login</button>
+      <button type="button" role="tab" id="signupTab" aria-selected="false">Sign Up</button>
+    </div>
+    <form class="account-form" id="loginForm">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" autocomplete="email" required>
+      <label for="loginPassword">Password</label>
+      <div class="password-field">
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+        <button class="password-toggle" type="button" data-password-toggle="loginPassword">Show</button>
+      </div>
+      <button class="btn btn-primary" type="submit">Continue</button>
+    </form>
+    <form class="account-form" id="signupForm" hidden>
+      <label for="signupName">Display name</label>
+      <input id="signupName" type="text" autocomplete="name" required>
+      <label for="signupEmail">Email</label>
+      <input id="signupEmail" type="email" autocomplete="email" required>
+      <label for="signupPassword">Password</label>
+      <div class="password-field">
+        <input id="signupPassword" type="password" autocomplete="new-password" required>
+        <button class="password-toggle" type="button" data-password-toggle="signupPassword">Show</button>
+      </div>
+      <label for="confirmPassword">Confirm password</label>
+      <div class="password-field">
+        <input id="confirmPassword" type="password" autocomplete="new-password" required>
+        <button class="password-toggle" type="button" data-password-toggle="confirmPassword">Show</button>
+      </div>
+      <button class="btn btn-primary" type="submit">Create account</button>
+    </form>
+    <div class="account-message" id="accountMessage" aria-live="polite"></div>
+  </div>
+</dialog>
+
+<div class="scroll-hud" aria-label="Page navigation and scroll progress">
+  <nav class="hud-sections" aria-label="Page sections">
+    <a href="#home" data-hud-link>HOME</a>
+    <a href="#search" data-hud-link>SEARCH</a>
+    <a href="#discover" data-hud-link>DISCOVER</a>
+    <a href="#world1" data-hud-link>WORLD</a>
+    <a href="#results" data-hud-link>RESULTS</a>
+    <a href="#faq" data-hud-link>FAQ</a>
+  </nav>
+  <div class="hud-progress" aria-label="Scroll progress">
+    <b id="scrollPercent">0%</b>
+    <span><i id="scrollProgress"></i></span>
+  </div>
+</div>
+
 <script>
 /* ==================================================
    ELEMENTS
@@ -1731,6 +2171,12 @@ const fileInput =
 
 const dropZone =
   document.getElementById("dropZone");
+
+const heroDropZone =
+  document.getElementById("heroDropZone");
+
+const scanner =
+  document.querySelector(".scanner");
 
 const previewLayout =
   document.getElementById("previewLayout");
@@ -1780,10 +2226,16 @@ const resultContent =
 const resultCount =
   document.getElementById("resultCount");
 
+const resultTabs =
+  document.getElementById("resultTabs");
+
 const scanLine =
   document.getElementById("scanLine");
 
 let selectedFile = null;
+let previewURL = "";
+let resultGroups = [];
+let searchInProgress = false;
 
 /* ==================================================
    CONFIG
@@ -1808,26 +2260,31 @@ fileInput.addEventListener("change", () => {
   }
 });
 
-dropZone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropZone.classList.add("drag");
-});
+function attachDropTarget(target){
+  target.addEventListener("dragover", event => {
+    event.preventDefault();
+    target.classList.add("drag");
+  });
 
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("drag");
-});
+  target.addEventListener("dragleave", event => {
+    if(!target.contains(event.relatedTarget)){
+      target.classList.remove("drag");
+    }
+  });
 
-dropZone.addEventListener("drop", e => {
+  target.addEventListener("drop", event => {
+    event.preventDefault();
+    target.classList.remove("drag");
 
-  e.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if(file){
+      loadImage(file);
+    }
+  });
+}
 
-  dropZone.classList.remove("drag");
-
-  if(e.dataTransfer.files[0]){
-    loadImage(e.dataTransfer.files[0]);
-  }
-
-});
+attachDropTarget(dropZone);
+attachDropTarget(heroDropZone);
 
 consent.addEventListener("change", () => {
 
@@ -1842,49 +2299,73 @@ startSearch.addEventListener("click", runSearch);
 
 function loadImage(file){
 
-  const allowed = [
+  if(searchInProgress){
+    return;
+  }
+
+  fileInput.value = "";
+
+  const allowedTypes = new Set([
     "image/jpeg",
     "image/png",
     "image/webp"
-  ];
+  ]);
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  const allowedExtensions = new Set(["jpg","jpeg","png","webp"]);
 
-  if(!allowed.includes(file.type)){
+  if(!allowedTypes.has(file.type) && !allowedExtensions.has(extension)){
     alert("Please choose a JPG, PNG or WEBP image.");
     return;
   }
 
-  if(file.size > 10 * 1024 * 1024){
+  if(file.size === 0 || file.size > 10 * 1024 * 1024){
     alert("Image must be smaller than 10 MB.");
     return;
   }
 
+  if(previewURL){
+    URL.revokeObjectURL(previewURL);
+  }
+
   selectedFile = file;
 
-  const localURL =
+  previewURL =
     URL.createObjectURL(file);
 
-  preview.src = localURL;
+  const currentPreviewURL = previewURL;
+  preview.src = previewURL;
 
   preview.onload = () => {
+    if(previewURL !== currentPreviewURL){
+      return;
+    }
 
     resolution.textContent =
       preview.naturalWidth +
       " × " +
       preview.naturalHeight;
+  };
 
+  preview.onerror = () => {
+    if(previewURL !== currentPreviewURL){
+      return;
+    }
+
+    resetImage();
+    alert("This file could not be read as an image. Please choose another JPG, PNG or WEBP file.");
   };
 
   filename.textContent =
     file.name || "Image";
 
   filesize.textContent =
-    (file.size / 1024 / 1024).toFixed(2) +
-    " MB";
+    formatFileSize(file.size);
 
   filetype.textContent =
     file.type
       .replace("image/","")
-      .toUpperCase();
+      .toUpperCase() ||
+    (extension || "IMAGE").toUpperCase();
 
   dropZone.style.display = "none";
   previewLayout.style.display = "grid";
@@ -1895,9 +2376,19 @@ function loadImage(file){
   results.style.display = "none";
   statusBox.style.display = "none";
 
+  previewLayout.scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
+
 }
 
 function resetImage(){
+
+  if(previewURL){
+    URL.revokeObjectURL(previewURL);
+    previewURL = "";
+  }
 
   selectedFile = null;
 
@@ -1915,8 +2406,11 @@ function resetImage(){
   results.style.display = "none";
 
   resultContent.innerHTML = "";
+  resultTabs.innerHTML = "";
+  resultTabs.hidden = true;
 
   progressBar.style.width = "0%";
+  updateStatus("Preparing...",0);
 
 }
 
@@ -1936,17 +2430,34 @@ function updateStatus(text, percent){
 
 }
 
+function formatFileSize(bytes){
+  if(bytes < 1024){
+    return `${bytes} B`;
+  }
+  if(bytes < 1024 * 1024){
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+}
+
 async function runSearch(){
 
-  if(!selectedFile || !consent.checked){
+  if(!selectedFile || !consent.checked || searchInProgress){
     return;
   }
 
+  searchInProgress = true;
   startSearch.disabled = true;
+  removeImage.disabled = true;
+  fileInput.disabled = true;
+  consent.disabled = true;
 
   statusBox.style.display = "block";
   results.style.display = "none";
+  resultTabs.replaceChildren();
+  resultTabs.hidden = true;
   scanLine.style.display = "block";
+  scanner.classList.add("is-searching");
 
   try{
 
@@ -2080,6 +2591,7 @@ async function runSearch(){
     console.error(error);
 
     scanLine.style.display = "none";
+    scanner.classList.remove("is-searching");
 
     results.style.display = "block";
 
@@ -2093,9 +2605,20 @@ async function runSearch(){
       ${escapeHTML(error.message || "Unknown error")}
     </div>`;
 
+    results.scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+
   }
   finally{
 
+    scanner.classList.remove("is-searching");
+    scanLine.style.display = "none";
+    searchInProgress = false;
+    removeImage.disabled = false;
+    fileInput.disabled = false;
+    consent.disabled = false;
     startSearch.disabled =
       !consent.checked;
 
@@ -2129,42 +2652,65 @@ function renderResults(data){
     ? data.results
     : [];
 
-  const combined = [
+  const normalizeItems = items => {
+    const seen = new Set();
+
+    return items.reduce((normalized,item) => {
+      if(!item || typeof item !== "object"){
+        return normalized;
+      }
+
+      const link =
+        item.link ||
+        item.source_url ||
+        item.url ||
+        item.page_url ||
+        "";
+
+      const safeLink = getSafeResultURL(link);
+      if(!safeLink || seen.has(safeLink)){
+        return normalized;
+      }
+
+      seen.add(safeLink);
+      normalized.push({...item,_traceLensURL:safeLink});
+      return normalized;
+    },[]);
+  };
+
+  const allResults = normalizeItems([
     ...organicResults,
     ...imageResults,
     ...visualMatches,
     ...genericResults
-  ];
+  ]);
+  const webResults = normalizeItems(organicResults);
+  const visualResults = normalizeItems([
+    ...imageResults,
+    ...visualMatches
+  ]);
 
-  const unique = [];
-  const seen = new Set();
-
-  combined.forEach(item => {
-
-    const link =
-      item.link ||
-      item.source_url ||
-      item.url ||
-      item.page_url ||
-      "";
-
-    if(!link || seen.has(link)){
-      return;
-    }
-
-    seen.add(link);
-
-    unique.push(item);
-
-  });
+  resultGroups = [];
+  if(allResults.length){
+    resultGroups.push({label:"BEST MATCHES",items:allResults});
+  }
+  if(webResults.length){
+    resultGroups.push({label:"WEB SOURCES",items:webResults});
+  }
+  if(visualResults.length){
+    resultGroups.push({label:"VISUAL RESULTS",items:visualResults});
+  }
 
   resultCount.textContent =
-    unique.length +
-    (unique.length === 1
+    allResults.length +
+    (allResults.length === 1
       ? " RESULT"
       : " RESULTS");
 
-  if(!unique.length){
+  resultTabs.replaceChildren();
+  resultTabs.hidden = resultGroups.length < 2;
+
+  if(!allResults.length){
 
     resultContent.innerHTML =
     `<div class="empty">
@@ -2182,31 +2728,39 @@ function renderResults(data){
 
   }
 
-  const grid =
-    document.createElement("div");
+  resultGroups.forEach((group,index) => {
+    const tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "result-tab";
+    tab.textContent = group.label;
+    tab.setAttribute("aria-pressed",index === 0 ? "true" : "false");
+    if(index === 0){
+      tab.classList.add("active");
+    }
 
-  grid.className =
-    "result-grid";
+    tab.addEventListener("click",() => {
+      resultTabs.querySelectorAll(".result-tab").forEach(button => {
+        const active = button === tab;
+        button.classList.toggle("active",active);
+        button.setAttribute("aria-pressed",String(active));
+      });
+      renderResultCards(group.items);
+    });
 
-  unique.forEach(item => {
+    resultTabs.appendChild(tab);
+  });
 
-    const link =
-      item.link ||
-      item.source_url ||
-      item.url ||
-      item.page_url ||
-      "";
+  renderResultCards(resultGroups[0].items);
+}
 
-    const title =
-      item.title ||
-      item.name ||
-      "Visual search result";
+function renderResultCards(items){
+  const grid = document.createElement("div");
+  grid.className = "result-grid";
 
-    const source =
-      item.source ||
-      item.domain ||
-      getDomain(link);
-
+  items.forEach(item => {
+    const link = item._traceLensURL;
+    const title = item.title || item.name || "Visual search result";
+    const source = item.source || item.domain || getDomain(link);
     const thumbnail =
       item.thumbnail ||
       item.thumbnail_url ||
@@ -2214,65 +2768,44 @@ function renderResults(data){
       item.image_url ||
       "";
 
-    const card =
-      document.createElement("article");
+    const card = document.createElement("article");
+    card.className = "result-card";
 
-    card.className =
-      "result-card";
-
-    let thumbHTML = "";
-
-    if(
-      typeof thumbnail === "string" &&
-      thumbnail.startsWith("http")
-    ){
-
-      thumbHTML =
-      `<div class="result-thumb">
-
-        <img
-          src="${escapeAttribute(thumbnail)}"
-          alt="Visual result"
-          loading="lazy"
-          referrerpolicy="no-referrer">
-
-      </div>`;
-
+    if(typeof thumbnail === "string" && getSafeResultURL(thumbnail)){
+      const thumb = document.createElement("div");
+      thumb.className = "result-thumb";
+      const image = document.createElement("img");
+      image.src = getSafeResultURL(thumbnail);
+      image.alt = `Visual result: ${String(title)}`;
+      image.loading = "lazy";
+      image.referrerPolicy = "no-referrer";
+      thumb.appendChild(image);
+      card.appendChild(thumb);
     }
 
-    card.innerHTML =
-    `${thumbHTML}
+    const label = document.createElement("div");
+    label.className = "result-label";
+    label.textContent = "VISUAL DISCOVERY";
 
-      <div class="result-label">
-        VISUAL DISCOVERY
-      </div>
+    const heading = document.createElement("h3");
+    heading.textContent = String(title);
 
-      <h3>
-        ${escapeHTML(title)}
-      </h3>
+    const domain = document.createElement("div");
+    domain.className = "result-domain";
+    domain.textContent = String(source);
 
-      <div class="result-domain">
-        ${escapeHTML(source)}
-      </div>
+    const openLink = document.createElement("a");
+    openLink.href = link;
+    openLink.target = "_blank";
+    openLink.rel = "noopener noreferrer";
+    openLink.className = "btn btn-primary";
+    openLink.textContent = "OPEN RESULT ↗";
 
-      <a
-        href="${escapeAttribute(link)}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn btn-primary">
-
-        OPEN RESULT ↗
-
-      </a>`;
-
+    card.append(label,heading,domain,openLink);
     grid.appendChild(card);
-
   });
 
-  resultContent.innerHTML = "";
-
-  resultContent.appendChild(grid);
-
+  resultContent.replaceChildren(grid);
 }
 
 /* ==================================================
@@ -2290,6 +2823,23 @@ function getDomain(url){
 
 }
 
+function getSafeResultURL(value){
+  if(typeof value !== "string" || !value.trim()){
+    return "";
+  }
+
+  try{
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.href
+      : "";
+  }
+  catch{
+    return "";
+  }
+
+}
+
 function escapeHTML(value){
 
   return String(value)
@@ -2301,17 +2851,19 @@ function escapeHTML(value){
 
 }
 
-function escapeAttribute(value){
-  return escapeHTML(value);
-}
-
-/* ==================================================
+/* ================================================
    FAQ
 ================================================== */
 
 document
 .querySelectorAll(".faq-question")
 .forEach(button => {
+
+  const answer = button.parentElement.querySelector(".faq-answer");
+  const answerId = `faq-answer-${Array.from(document.querySelectorAll(".faq-question")).indexOf(button) + 1}`;
+  answer.id = answerId;
+  button.setAttribute("aria-controls",answerId);
+  button.setAttribute("aria-expanded","false");
 
   button.addEventListener(
     "click",
@@ -2320,14 +2872,10 @@ document
       const item =
         button.parentElement;
 
-      const answer =
-        item.querySelector(
-          ".faq-answer"
-        );
+      const isOpen = item.classList.toggle("open");
+      button.setAttribute("aria-expanded",String(isOpen));
 
-      item.classList.toggle("open");
-
-      if(item.classList.contains("open")){
+      if(isOpen){
 
         answer.style.maxHeight =
           answer.scrollHeight + "px";
@@ -2342,8 +2890,150 @@ document
 
     }
   );
-
 });
+
+/* ==================================================
+   ACCOUNT UI
+================================================== */
+
+const accountDialog = document.getElementById("accountDialog");
+const accountTitle = document.getElementById("accountTitle");
+const accountMessage = document.getElementById("accountMessage");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+
+function setAccountMode(mode){
+  const signingUp = mode === "signup";
+  loginForm.hidden = signingUp;
+  signupForm.hidden = !signingUp;
+  loginTab.setAttribute("aria-selected",String(!signingUp));
+  signupTab.setAttribute("aria-selected",String(signingUp));
+  accountTitle.textContent = signingUp ? "Create your account" : "Welcome back";
+  accountMessage.textContent = "";
+}
+
+document.querySelectorAll("[data-account-open]").forEach(button => {
+  button.addEventListener("click",() => {
+    setAccountMode(button.dataset.accountOpen);
+    accountDialog.showModal();
+  });
+});
+
+document.querySelector(".account-close").addEventListener("click",() => {
+  accountDialog.close();
+});
+
+accountDialog.addEventListener("click",event => {
+  if(event.target === accountDialog){
+    accountDialog.close();
+  }
+});
+
+accountDialog.addEventListener("close",() => {
+  loginForm.reset();
+  signupForm.reset();
+  accountMessage.textContent = "";
+  accountDialog.querySelectorAll(".password-toggle").forEach(button => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    input.type = "password";
+    button.textContent = "Show";
+  });
+});
+
+loginTab.addEventListener("click",() => setAccountMode("login"));
+signupTab.addEventListener("click",() => setAccountMode("signup"));
+
+document.querySelectorAll("[data-password-toggle]").forEach(button => {
+  button.addEventListener("click",() => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    button.textContent = show ? "Hide" : "Show";
+    input.focus();
+  });
+});
+
+loginForm.addEventListener("submit",event => {
+  event.preventDefault();
+  accountMessage.textContent =
+    "Authentication is not connected yet. Your credentials were not sent or stored.";
+});
+
+signupForm.addEventListener("submit",event => {
+  event.preventDefault();
+  const password = document.getElementById("signupPassword");
+  const confirmation = document.getElementById("confirmPassword");
+
+  if(password.value !== confirmation.value){
+    confirmation.setCustomValidity("Passwords do not match.");
+    confirmation.reportValidity();
+    confirmation.setCustomValidity("");
+    accountMessage.textContent = "Please make sure both password fields match.";
+    return;
+  }
+
+  accountMessage.textContent =
+    "Authentication is not connected yet. No account was created and your credentials were not sent or stored.";
+});
+
+/* ==================================================
+   SCROLL HUD
+================================================== */
+
+const scrollPercent = document.getElementById("scrollPercent");
+const scrollProgress = document.getElementById("scrollProgress");
+const hudLinks = Array.from(document.querySelectorAll("[data-hud-link]"));
+let scrollUpdatePending = false;
+
+function updateScrollHUD(){
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = scrollable > 0
+    ? Math.min(100,Math.max(0,window.scrollY / scrollable * 100))
+    : 0;
+  scrollPercent.textContent = `${Math.round(progress)}%`;
+  scrollProgress.style.width = `${progress}%`;
+  scrollUpdatePending = false;
+}
+
+window.addEventListener("scroll",() => {
+  if(!scrollUpdatePending){
+    scrollUpdatePending = true;
+    requestAnimationFrame(updateScrollHUD);
+  }
+},{passive:true});
+window.addEventListener("resize",updateScrollHUD);
+updateScrollHUD();
+
+hudLinks.forEach(link => {
+  link.addEventListener("click",event => {
+    if(link.getAttribute("href") === "#results" && results.style.display !== "block"){
+      event.preventDefault();
+      document.getElementById("search").scrollIntoView({behavior:"smooth"});
+    }
+  });
+});
+
+if("IntersectionObserver" in window){
+  const hudTargets = hudLinks
+    .map(link => document.querySelector(link.getAttribute("href")))
+    .filter(target => target && target.id !== "results");
+
+  const sectionObserver = new IntersectionObserver(entries => {
+    const current = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+    if(current){
+      hudLinks.forEach(link => {
+        link.classList.toggle("active",link.getAttribute("href") === `#${current.target.id}`);
+      });
+    }
+  },{rootMargin:"-25% 0px -55% 0px",threshold:[0,.2,.5]});
+
+  hudTargets.forEach(target => sectionObserver.observe(target));
+}
 
 /* ==================================================
    CURSOR LIGHT
@@ -2355,6 +3045,10 @@ const cursorLight =
 window.addEventListener(
   "pointermove",
   event => {
+
+    if(matchMedia("(pointer: coarse)").matches){
+      return;
+    }
 
     cursorLight.style.left =
       event.clientX + "px";
@@ -2372,6 +3066,11 @@ window.addEventListener(
 document
 .querySelectorAll(".tilt")
 .forEach(card => {
+
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    matchMedia("(pointer: coarse)").matches){
+    return;
+  }
 
   card.addEventListener(
     "pointermove",
@@ -2415,18 +3114,54 @@ document
 
 });
 
+document
+.querySelectorAll(".btn")
+.forEach(button => {
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    matchMedia("(pointer: coarse)").matches){
+    return;
+  }
+
+  button.addEventListener("pointermove",event => {
+    if(button.disabled){
+      return;
+    }
+
+    const rect = button.getBoundingClientRect();
+    const x = (event.clientX - rect.left - rect.width / 2) / rect.width;
+    const y = (event.clientY - rect.top - rect.height / 2) / rect.height;
+    button.style.setProperty("--mag-x",`${x * 4}px`);
+    button.style.setProperty("--mag-y",`${y * 3}px`);
+  });
+
+  button.addEventListener("pointerleave",() => {
+    button.style.removeProperty("--mag-x");
+    button.style.removeProperty("--mag-y");
+  });
+});
+
 /* ==================================================
    THREE.JS LIVE WORLD
 ================================================== */
 
-(function(){
+(async function(){
 
 if(
-  !window.THREE ||
   window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches
 ){
+  return;
+}
+
+let THREE;
+try{
+  THREE = await import(
+    "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+  );
+}
+catch(error){
+  console.warn("TraceLens 3D scene could not be loaded.",error);
   return;
 }
 
@@ -2456,12 +3191,18 @@ camera.position.set(
   12
 );
 
-const renderer =
-  new THREE.WebGLRenderer({
+let renderer;
+try{
+  renderer = new THREE.WebGLRenderer({
     canvas,
     alpha:true,
     antialias:innerWidth > 700
   });
+}
+catch(error){
+  console.warn("TraceLens 3D scene is unavailable in this browser.",error);
+  return;
+}
 
 renderer.setSize(
   innerWidth,
@@ -2471,7 +3212,7 @@ renderer.setSize(
 renderer.setPixelRatio(
   Math.min(
     devicePixelRatio,
-    1.6
+    innerWidth < 700 ? 1.1 : 1.6
   )
 );
 
@@ -2525,7 +3266,7 @@ scene.add(light2);
 
 const starCount =
   innerWidth < 700
-  ? 300
+  ? 180
   : 900;
 
 const starPositions =
@@ -3003,6 +3744,20 @@ function createIsland(
 
   island.add(edge);
 
+  const pathway =
+    createRing(
+      1.55*scale,
+      0x7187db
+    );
+
+  pathway.rotation.x =
+    Math.PI/2;
+
+  pathway.position.y =
+    .36*scale;
+
+  island.add(pathway);
+
   const towerMaterial =
     new THREE.MeshStandardMaterial({
       color:0x173145,
@@ -3062,6 +3817,7 @@ function createIsland(
     1.55*scale;
 
   core.userData.core = true;
+  core.userData.baseY = core.position.y;
 
   island.add(core);
 
@@ -3073,8 +3829,8 @@ function createIsland(
 
 const mainIsland =
   createIsland(
-    1,
-    7
+    1.8,
+    12
   );
 
 mainIsland.position.set(
@@ -3089,7 +3845,7 @@ world.add(mainIsland);
 
 const smallIslands=[];
 
-for(let i=0;i<5;i++){
+for(let i=0;i<(innerWidth < 700 ? 3 : 5);i++){
 
   const mini =
     createIsland(
@@ -3124,7 +3880,7 @@ for(let i=0;i<5;i++){
 
 const panels=[];
 
-for(let i=0;i<10;i++){
+for(let i=0;i<(innerWidth < 700 ? 5 : 10);i++){
 
   const panel =
     new THREE.Mesh(
@@ -3170,7 +3926,7 @@ for(let i=0;i<10;i++){
 
 const cubes=[];
 
-for(let i=0;i<18;i++){
+for(let i=0;i<(innerWidth < 700 ? 8 : 18);i++){
 
   const cube =
     new THREE.Mesh(
@@ -3239,7 +3995,7 @@ window.addEventListener(
    GSAP SCROLL JOURNEY
 ================================================== */
 
-if(window.gsap){
+if(window.gsap && window.ScrollTrigger){
 
   gsap.registerPlugin(
     ScrollTrigger
@@ -3579,12 +4335,6 @@ function animate(){
   productRing.rotation.z =
     t*.2;
 
-  product.position.y +=
-    Math.sin(t*.8)*.0008;
-
-  car.position.y +=
-    Math.sin(t*.9)*.0007;
-
   smallIslands.forEach(
     (island,index) => {
 
@@ -3602,9 +4352,9 @@ function animate(){
 
         if(child.userData.core){
 
-          child.position.y +=
-            Math.sin(t*1.5+index)*
-            .0007;
+          child.position.y =
+            child.userData.baseY +
+            Math.sin(t*1.5+index)*.06;
 
           child.rotation.y += .02;
 
@@ -3626,7 +4376,7 @@ function animate(){
         child.rotation.y += .025;
 
         child.position.y =
-          1.55 +
+          child.userData.baseY +
           Math.sin(t*1.7)*.12;
 
       }
@@ -3712,7 +4462,7 @@ window.addEventListener(
     renderer.setPixelRatio(
       Math.min(
         devicePixelRatio,
-        1.6
+        innerWidth < 700 ? 1.1 : 1.6
       )
     );
 
