@@ -1,0 +1,21 @@
+{
+  "name": "tracelens",
+  "version": "1.0.0",
+  "description": "TraceLens - Photo Protection and Reverse Image Search",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel"
+  },
+  "keywords": [
+    "reverse-image-search",
+    "photo-protection",
+    "analytics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
