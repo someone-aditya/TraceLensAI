@@ -1,1347 +1,4355 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TraceLens — Photo Protection</title>
+<meta name="theme-color" content="#030610">
+
+<title>TraceLens — Photo Protection Intelligence</title>
+
+<!-- VERCEL ANALYTICS -->
+<script>
+window.va = window.va || function () {
+  (window.vaq = window.vaq || []).push(arguments);
+};
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 
 <style>
 :root{
-  --bg:#040611;
-  --panel:#0a1020;
-  --panel2:#0e1730;
-  --line:#27365f;
-  --cyan:#55e6ff;
-  --blue:#6b8cff;
-  --purple:#ad73ff;
-  --text:#f6f8ff;
-  --muted:#909dbc;
-  --danger:#ff6685;
-  --success:#57e6a5;
+  --bg:#03050b;
+  --bg2:#060a13;
+  --panel:#080d18;
+  --panel2:#0c1322;
+  --panel3:#10192b;
+  --line:#1c2942;
+  --line2:#293a5c;
+  --cyan:#55d8f5;
+  --cyan2:#2399c7;
+  --blue:#6380d9;
+  --purple:#8065d5;
+  --text:#f4f7ff;
+  --muted:#8794ae;
+  --soft:#b8c3d8;
+  --green:#54d6a0;
+  --danger:#e66c86;
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
 body{
   margin:0;
-  font-family:Inter,Segoe UI,Arial,sans-serif;
-  background:
-    radial-gradient(circle at 10% 0%,#142755 0,transparent 28%),
-    radial-gradient(circle at 90% 15%,#311958 0,transparent 25%),
-    var(--bg);
-  color:var(--text);
   min-height:100vh;
+  overflow-x:hidden;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%,#10203d 0,transparent 26%),
+    radial-gradient(circle at 90% 15%,#1c1436 0,transparent 24%),
+    var(--bg);
 }
-body:before{
-  content:"";
-  position:fixed;inset:0;pointer-events:none;opacity:.13;
+
+body.modal-open{
+  overflow:hidden;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+button,
+.btn{
+  border:0;
+  outline:0;
+  cursor:pointer;
+  text-decoration:none;
+  transition:
+    transform .22s ease,
+    border-color .22s ease,
+    background .22s ease,
+    opacity .22s ease;
+}
+
+button:hover,
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+button:focus-visible,
+a:focus-visible{
+  outline:2px solid var(--cyan);
+  outline-offset:3px;
+}
+
+a{
+  color:inherit;
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.site-grid{
+  position:fixed;
+  inset:0;
+  z-index:-5;
+  pointer-events:none;
+  opacity:.22;
   background-image:
-    linear-gradient(#7181ae18 1px,transparent 1px),
-    linear-gradient(90deg,#7181ae18 1px,transparent 1px);
-  background-size:40px 40px;
-  z-index:-1;
+    linear-gradient(#5576a50c 1px,transparent 1px),
+    linear-gradient(90deg,#5576a50c 1px,transparent 1px);
+  background-size:45px 45px;
+  mask-image:linear-gradient(to bottom,#000,transparent 85%);
 }
-button,.btn{
-  border:0;border-radius:12px;padding:13px 18px;font-weight:800;
-  cursor:pointer;text-decoration:none;display:inline-flex;
-  align-items:center;justify-content:center;gap:7px;transition:.2s;
-  font-family:inherit;
+
+.site-noise{
+  position:fixed;
+  inset:0;
+  z-index:-4;
+  pointer-events:none;
+  opacity:.025;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      #fff 0,
+      #fff 1px,
+      transparent 1px,
+      transparent 3px
+    );
 }
-button:hover,.btn:hover{transform:translateY(-2px)}
-.primary{
-  background:linear-gradient(135deg,var(--cyan),#9c8cff);
-  color:#041018;
-  box-shadow:0 0 25px #55e6ff20;
+
+.ambient{
+  position:fixed;
+  width:600px;
+  height:600px;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:.08;
+  z-index:-3;
+  pointer-events:none;
 }
-.secondary{
-  background:#11182c;color:white;border:1px solid #30406d;
+
+.ambient.one{
+  background:#2689d8;
+  left:-250px;
+  top:100px;
 }
-.ghost{
-  background:transparent;color:#b8c5e7;border:1px solid #29375d;
+
+.ambient.two{
+  background:#6c48bd;
+  right:-280px;
+  top:500px;
 }
-button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* =========================================================
+   SHARED UI
+========================================================= */
+
+.container{
+  width:min(1120px,calc(100% - 40px));
+  margin:auto;
+}
+
 .badge{
-  display:inline-block;border:1px solid #425286;background:#101831;
-  padding:8px 14px;border-radius:999px;color:#bdcbff;
-  font-size:11px;font-weight:900;letter-spacing:1.4px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 13px;
+  border-radius:999px;
+  border:1px solid #293c5f;
+  background:#0a1323cc;
+  color:#aebbd5;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.7px;
 }
+
+.badge-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 10px #55d8f580;
+}
+
+.primary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:13px 19px;
+  border-radius:11px;
+  color:#031018;
+  font-weight:850;
+  background:
+    linear-gradient(135deg,#73dff4,#7782dd);
+  box-shadow:0 8px 30px #32799c1c;
+}
+
+.secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:13px 19px;
+  border-radius:11px;
+  color:#e9efff;
+  font-weight:800;
+  background:#0c1423;
+  border:1px solid #293958;
+}
+
+.ghost{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 16px;
+  border-radius:11px;
+  color:#aebbd2;
+  background:transparent;
+  border:1px solid #25344f;
+}
+
+.primary:disabled{
+  opacity:.38;
+  cursor:not-allowed;
+  transform:none;
+}
+
 .grad{
-  background:linear-gradient(90deg,#fff,var(--cyan),#ba91ff);
-  -webkit-background-clip:text;color:transparent;
+  background:linear-gradient(90deg,#f7fbff,#77d9ee,#a494df);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
 }
 
-/* INTRO */
-#intro{
-  position:fixed;inset:0;background:#02040a;z-index:9999;
-  display:none;overflow:hidden;align-items:center;justify-content:center;
+.section-title{
+  text-align:center;
+  margin-bottom:32px;
 }
-#intro.show{display:flex}
-.intro-grid{
-  position:absolute;inset:-30%;
-  background-image:
-    linear-gradient(#55e6ff12 1px,transparent 1px),
-    linear-gradient(90deg,#55e6ff12 1px,transparent 1px);
-  background-size:60px 60px;
-  transform:perspective(700px) rotateX(65deg);
-  animation:gridMove 6s linear infinite;
-}
-@keyframes gridMove{
-  to{transform:perspective(700px) rotateX(65deg) translateY(60px)}
-}
-.intro-glow{
-  position:absolute;width:480px;height:480px;border-radius:50%;
-  background:#55e6ff12;filter:blur(70px);
-  animation:pulse 2s ease-in-out infinite alternate;
-}
-@keyframes pulse{to{transform:scale(1.25);opacity:.6}}
-.intro-content{
-  position:relative;z-index:2;text-align:center;width:min(850px,90%);
-}
-.intro-logo{
-  font-size:clamp(48px,9vw,100px);font-weight:950;letter-spacing:-5px;
-  text-shadow:0 0 40px #55e6ff45;
-}
-.intro-logo span{color:var(--cyan)}
-.intro-kicker{
-  color:var(--cyan);font-size:11px;font-weight:900;letter-spacing:4px;
-  margin-bottom:15px;
-}
-.intro-title{
-  font-size:clamp(25px,4vw,48px);margin:20px 0 8px;
-}
-.intro-sub{color:#8ea0c8;letter-spacing:2px;font-size:13px}
-.intro-scan{
-  width:min(550px,85%);height:2px;background:#15233c;
-  margin:30px auto;position:relative;overflow:hidden;
-}
-.intro-scan:after{
-  content:"";position:absolute;width:25%;height:100%;left:-25%;
-  background:var(--cyan);box-shadow:0 0 18px var(--cyan);
-  animation:introScan 1.4s linear infinite;
-}
-@keyframes introScan{to{left:110%}}
-.intro-nodes{position:absolute;inset:0;pointer-events:none}
-.node{
-  position:absolute;width:6px;height:6px;background:var(--cyan);
-  border-radius:50%;box-shadow:0 0 14px var(--cyan);
-  animation:nodePulse 2s infinite alternate;
-}
-@keyframes nodePulse{to{opacity:.2;transform:scale(.6)}}
-.skip{
-  position:absolute;right:25px;top:25px;z-index:5;
-  background:#0b1224aa;border:1px solid #34466f;color:#dce5ff;
-}
-.intro-progress{
-  position:absolute;bottom:0;left:0;height:3px;width:0;
-  background:linear-gradient(90deg,var(--cyan),var(--purple));
-}
-.intro-progress.run{animation:introProgress 26s linear forwards}
-@keyframes introProgress{to{width:100%}}
 
-/* NAV */
+.section-title h2{
+  margin:13px 0 8px;
+  font-size:clamp(31px,5vw,46px);
+  letter-spacing:-1.8px;
+}
+
+.section-title p{
+  color:var(--muted);
+  max-width:620px;
+  margin:auto;
+  line-height:1.65;
+}
+
+/* =========================================================
+   CINEMATIC INTRO
+========================================================= */
+
+#cinematicIntro{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:none;
+  overflow:hidden;
+  background:#010207;
+  color:white;
+  perspective:900px;
+}
+
+#cinematicIntro.active{
+  display:block;
+}
+
+#introCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.intro-vignette{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at center,transparent 20%,#010207 105%),
+    linear-gradient(to bottom,#0004,transparent 20%,transparent 75%,#0008);
+}
+
+.intro-scanlines{
+  position:absolute;
+  inset:0;
+  opacity:.035;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #fff 0,
+      #fff 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+.intro-top{
+  position:absolute;
+  top:25px;
+  left:28px;
+  right:28px;
+  z-index:15;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.intro-system{
+  color:#7f90aa;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+.skip-intro{
+  padding:10px 14px;
+  border-radius:9px;
+  color:#bac7dd;
+  border:1px solid #263853;
+  background:#07101bcc;
+  backdrop-filter:blur(10px);
+}
+
+.intro-center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:7;
+  pointer-events:none;
+}
+
+.intro-copy{
+  width:min(800px,90%);
+  text-align:center;
+  transition:
+    transform .9s cubic-bezier(.2,.7,.2,1),
+    opacity .55s ease,
+    filter .55s ease;
+}
+
+.intro-copy.switching{
+  opacity:0;
+  transform:scale(1.12);
+  filter:blur(12px);
+}
+
+.intro-step{
+  color:#58cde7;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:4px;
+  margin-bottom:16px;
+}
+
+.intro-heading{
+  margin:0;
+  font-size:clamp(35px,6vw,78px);
+  line-height:.98;
+  letter-spacing:-3px;
+  font-weight:900;
+  text-shadow:0 5px 40px #000;
+}
+
+.intro-description{
+  max-width:560px;
+  margin:18px auto 0;
+  color:#8290a9;
+  line-height:1.7;
+  font-size:14px;
+}
+
+.intro-photo{
+  position:absolute;
+  z-index:6;
+  width:min(290px,55vw);
+  aspect-ratio:4/5;
+  left:50%;
+  top:50%;
+  transform:
+    translate(-50%,-50%)
+    translateZ(-600px)
+    rotateY(-18deg)
+    scale(.2);
+  opacity:0;
+  border:1px solid #3e7188;
+  border-radius:15px;
+  background:
+    radial-gradient(circle at 50% 30%,#1b3546,transparent 25%),
+    linear-gradient(145deg,#0c1622,#07101b);
+  box-shadow:0 20px 80px #000c;
+  overflow:hidden;
+  transition:
+    transform 2s cubic-bezier(.16,.7,.2,1),
+    opacity .7s ease;
+}
+
+.intro-photo.visible{
+  opacity:1;
+  transform:
+    translate(-50%,-50%)
+    translateZ(0)
+    rotateY(-7deg)
+    scale(1);
+}
+
+.photo-person{
+  position:absolute;
+  left:50%;
+  top:22%;
+  transform:translateX(-50%);
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#172c3c;
+  border:1px solid #31566d;
+}
+
+.photo-body{
+  position:absolute;
+  left:50%;
+  top:46%;
+  transform:translateX(-50%);
+  width:150px;
+  height:180px;
+  border-radius:70px 70px 15px 15px;
+  background:linear-gradient(#15293a,#0a1420);
+}
+
+.photo-hud{
+  position:absolute;
+  inset:14px;
+  border:1px solid #4db5ca44;
+}
+
+.photo-hud:before,
+.photo-hud:after{
+  content:"";
+  position:absolute;
+  width:28px;
+  height:28px;
+  border-color:#6ed9ed;
+}
+
+.photo-hud:before{
+  left:-1px;
+  top:-1px;
+  border-left:2px solid;
+  border-top:2px solid;
+}
+
+.photo-hud:after{
+  right:-1px;
+  bottom:-1px;
+  border-right:2px solid;
+  border-bottom:2px solid;
+}
+
+.photo-scan{
+  position:absolute;
+  left:0;
+  right:0;
+  top:-5%;
+  height:2px;
+  background:#67dff5;
+  box-shadow:
+    0 0 8px #67dff5,
+    0 0 28px #67dff5;
+  opacity:0;
+}
+
+.intro-photo.scanning .photo-scan{
+  opacity:1;
+  animation:photoScan 1.8s linear infinite;
+}
+
+@keyframes photoScan{
+  from{top:3%}
+  to{top:97%}
+}
+
+.web-card{
+  position:absolute;
+  z-index:5;
+  width:190px;
+  height:115px;
+  border-radius:10px;
+  border:1px solid #2b4565;
+  background:#07101bcc;
+  backdrop-filter:blur(10px);
+  opacity:0;
+  transform:scale(.4) translateZ(-400px);
+  transition:
+    opacity .7s ease,
+    transform 1.6s cubic-bezier(.2,.7,.2,1);
+}
+
+.web-card.show{
+  opacity:.9;
+  transform:scale(1) translateZ(0);
+}
+
+.web-card:before{
+  content:"";
+  position:absolute;
+  left:12px;
+  right:12px;
+  top:13px;
+  height:7px;
+  border-radius:4px;
+  background:#1d334a;
+}
+
+.web-card:after{
+  content:"";
+  position:absolute;
+  left:12px;
+  right:55px;
+  bottom:14px;
+  height:42px;
+  border-radius:5px;
+  background:linear-gradient(135deg,#12273a,#19243a);
+}
+
+.web-card .match{
+  position:absolute;
+  right:10px;
+  bottom:12px;
+  font-size:8px;
+  font-weight:900;
+  color:#66d9bc;
+}
+
+.w1{left:8%;top:25%}
+.w2{right:7%;top:20%}
+.w3{left:14%;bottom:17%}
+.w4{right:12%;bottom:18%}
+
+.intro-logo-reveal{
+  position:absolute;
+  inset:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transform:scale(.6);
+  pointer-events:none;
+  transition:
+    opacity 1.2s ease,
+    transform 1.7s cubic-bezier(.16,.8,.2,1);
+}
+
+.intro-logo-reveal.show{
+  opacity:1;
+  transform:scale(1);
+  pointer-events:auto;
+}
+
+.logo-reveal-inner{
+  text-align:center;
+}
+
+.intro-ring{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(480px,80vw);
+  height:min(480px,80vw);
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:1px solid #4c6db744;
+  box-shadow:
+    inset 0 0 60px #3974a50d,
+    0 0 60px #426b9d10;
+  animation:ringTurn 12s linear infinite;
+}
+
+.intro-ring:before{
+  content:"";
+  position:absolute;
+  inset:22px;
+  border-radius:50%;
+  border-top:1px solid #59c9e0;
+  border-right:1px solid transparent;
+  opacity:.55;
+}
+
+@keyframes ringTurn{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+
+.intro-brand{
+  position:relative;
+  font-size:clamp(50px,9vw,100px);
+  font-weight:950;
+  letter-spacing:-5px;
+}
+
+.intro-brand span{
+  color:#59cee7;
+}
+
+.intro-tagline{
+  position:relative;
+  margin-top:10px;
+  color:#8595b0;
+  letter-spacing:3px;
+  font-size:11px;
+}
+
+.system-ready{
+  position:relative;
+  margin:25px auto 0;
+  width:max-content;
+  color:#63d7bb;
+  border:1px solid #2d6a63;
+  background:#071a19aa;
+  padding:9px 18px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.enter-site{
+  position:relative;
+  margin-top:18px;
+  pointer-events:auto;
+}
+
+.intro-bottom{
+  position:absolute;
+  z-index:15;
+  left:50%;
+  bottom:28px;
+  transform:translateX(-50%);
+  width:min(500px,70%);
+}
+
+.intro-progress-track{
+  height:2px;
+  background:#17233a;
+  overflow:hidden;
+}
+
+#introProgress{
+  display:block;
+  width:0;
+  height:100%;
+  background:linear-gradient(90deg,#4ebdd7,#7664c7);
+}
+
+.intro-scenes{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  color:#52617b;
+  font-size:9px;
+  letter-spacing:1px;
+}
+
+.intro-scenes .active{
+  color:#71d5e8;
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
 nav{
-  min-height:72px;padding:0 4%;display:flex;align-items:center;
-  justify-content:space-between;border-bottom:1px solid #ffffff12;
-  background:#050713dd;backdrop-filter:blur(18px);
-  position:sticky;top:0;z-index:100;
+  position:sticky;
+  top:0;
+  z-index:500;
+  height:72px;
+  border-bottom:1px solid #ffffff0d;
+  background:#040710d9;
+  backdrop-filter:blur(18px);
 }
-.logo{font-size:23px;font-weight:950;cursor:pointer}
-.logo span{color:var(--cyan)}
-.links{display:flex;gap:22px;align-items:center}
+
+.nav-inner{
+  width:min(1180px,calc(100% - 36px));
+  height:100%;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:950;
+  letter-spacing:-1px;
+  cursor:pointer;
+}
+
+.logo span{
+  color:var(--cyan);
+}
+
+.links{
+  display:flex;
+  align-items:center;
+  gap:24px;
+}
+
 .links a{
-  color:#929dbc;text-decoration:none;font-size:13px;font-weight:650;
+  color:#8592aa;
+  font-size:13px;
+  text-decoration:none;
 }
-.links a:hover{color:white}
-.nav-actions{display:flex;gap:8px}
 
-/* HERO */
+.links a:hover{
+  color:white;
+}
+
+.nav-actions{
+  display:flex;
+  gap:8px;
+}
+
+.nav-actions button{
+  padding:10px 14px;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
 .hero{
-  max-width:1100px;margin:auto;text-align:center;padding:100px 22px 55px;
+  position:relative;
+  min-height:690px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
 }
+
+.hero-orbit{
+  position:absolute;
+  width:620px;
+  height:620px;
+  border:1px solid #30466320;
+  border-radius:50%;
+  right:-250px;
+  top:20px;
+}
+
+.hero-orbit:before,
+.hero-orbit:after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:1px solid #3d557520;
+}
+
+.hero-orbit:before{
+  inset:80px;
+}
+
+.hero-orbit:after{
+  inset:160px;
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  width:min(1000px,calc(100% - 40px));
+  text-align:center;
+  padding:90px 0;
+}
+
 .hero h1{
-  font-size:clamp(46px,7vw,82px);line-height:.98;letter-spacing:-4px;
-  max-width:950px;margin:25px auto 20px;
+  max-width:900px;
+  margin:25px auto 20px;
+  font-size:clamp(48px,7vw,84px);
+  line-height:.98;
+  letter-spacing:-4.5px;
 }
+
 .hero p{
-  max-width:720px;margin:auto;color:var(--muted);
-  line-height:1.7;font-size:18px;
+  max-width:690px;
+  margin:auto;
+  color:var(--muted);
+  line-height:1.75;
+  font-size:17px;
 }
+
 .actions{
-  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:11px;
+  flex-wrap:wrap;
+  margin-top:29px;
 }
 
-/* CARDS */
-.features{
-  max-width:1080px;margin:20px auto 80px;padding:0 22px;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:15px;
-}
-.card{
-  background:linear-gradient(180deg,#10172bdd,#090e1bdd);
-  border:1px solid var(--line);border-radius:20px;padding:24px;
-  box-shadow:0 20px 60px #0005;transition:.25s;
-}
-.click-card{cursor:pointer}
-.click-card:hover{
-  transform:translateY(-5px);border-color:#4c659a;
-  box-shadow:0 20px 70px #55e6ff0c;
-}
-.card p{color:var(--muted);line-height:1.6}
-.icon{
-  width:45px;height:45px;border-radius:13px;display:grid;place-items:center;
-  background:#142348;border:1px solid #344d84;font-size:20px;
+.hero-status{
+  margin:38px auto 0;
+  width:min(650px,100%);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border:1px solid #1b2a43;
+  background:#060b14aa;
+  border-radius:14px;
+  overflow:hidden;
 }
 
-/* SCAN */
-.scanSection{max-width:1050px;margin:auto;padding:45px 22px 100px}
-.title{text-align:center;margin-bottom:28px}
-.title h2{font-size:40px;margin:10px}
-.title p{color:var(--muted)}
-.scanCard{
-  background:#090e1ddd;border:1px solid #29365e;border-radius:22px;
-  padding:20px;box-shadow:0 25px 80px #0007;
+.hero-status div{
+  padding:15px;
+  border-right:1px solid #1b2a43;
 }
+
+.hero-status div:last-child{
+  border:0;
+}
+
+.hero-status b{
+  display:block;
+  color:#dce5f7;
+  font-size:12px;
+}
+
+.hero-status span{
+  display:block;
+  color:#65748f;
+  margin-top:4px;
+  font-size:10px;
+}
+
+/* =========================================================
+   FEATURE BENTO
+========================================================= */
+
+.features-section{
+  padding:40px 0 105px;
+}
+
+.bento{
+  display:grid;
+  grid-template-columns:1.2fr .8fr .8fr;
+  gap:14px;
+}
+
+.info-card{
+  position:relative;
+  min-height:250px;
+  padding:25px;
+  border-radius:19px;
+  overflow:hidden;
+  cursor:pointer;
+  border:1px solid #1f2d48;
+  background:
+    linear-gradient(145deg,#0c1322,#070b14);
+  transition:
+    transform .28s ease,
+    border-color .28s ease;
+}
+
+.info-card:hover{
+  transform:translateY(-5px);
+  border-color:#385474;
+}
+
+.info-card.large{
+  grid-row:span 2;
+  min-height:515px;
+}
+
+.card-shine{
+  position:absolute;
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  background:#48b5d20c;
+  filter:blur(35px);
+  right:-60px;
+  top:-60px;
+  transition:.4s;
+}
+
+.info-card:hover .card-shine{
+  background:#48b5d218;
+  transform:scale(1.3);
+}
+
+.card-icon{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  border:1px solid #2d4565;
+  background:#0d192a;
+  color:#7dd5e7;
+  font-size:18px;
+}
+
+.info-card h3{
+  margin:22px 0 9px;
+  font-size:20px;
+}
+
+.info-card p{
+  color:#7f8ca5;
+  line-height:1.65;
+  font-size:13px;
+}
+
+.learn{
+  position:absolute;
+  left:25px;
+  bottom:23px;
+  color:#7fc8d8;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.network-demo{
+  height:220px;
+  margin-top:25px;
+  position:relative;
+}
+
+.demo-center,
+.demo-node{
+  position:absolute;
+  border-radius:10px;
+  border:1px solid #2c4867;
+  background:#0a1726;
+}
+
+.demo-center{
+  width:90px;
+  height:105px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+
+.demo-node{
+  width:65px;
+  height:45px;
+}
+
+.demo-node:nth-child(2){left:3%;top:10%}
+.demo-node:nth-child(3){right:4%;top:18%}
+.demo-node:nth-child(4){left:10%;bottom:8%}
+.demo-node:nth-child(5){right:12%;bottom:3%}
+
+.demo-center:after,
+.demo-node:after{
+  content:"";
+  position:absolute;
+  left:10px;
+  right:10px;
+  top:10px;
+  height:4px;
+  border-radius:5px;
+  background:#1f3b53;
+}
+
+/* =========================================================
+   PROCESS
+========================================================= */
+
+.process-section{
+  padding:20px 0 110px;
+}
+
+.process{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.process-card{
+  position:relative;
+  padding:22px;
+  min-height:190px;
+  border:1px solid #1d2a42;
+  border-radius:16px;
+  background:#070c16;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.process-card:hover{
+  border-color:#35516e;
+  background:#09111e;
+}
+
+.process-number{
+  font-size:10px;
+  color:#5bc8de;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.process-card h3{
+  margin:27px 0 8px;
+}
+
+.process-card p{
+  color:#74829b;
+  font-size:12px;
+  line-height:1.6;
+}
+
+/* =========================================================
+   SCANNER
+========================================================= */
+
+.scan-section{
+  padding:30px 0 115px;
+}
+
+.scan-shell{
+  border:1px solid #20304d;
+  border-radius:22px;
+  background:#070b14cc;
+  box-shadow:0 30px 100px #0007;
+  overflow:hidden;
+}
+
+.scan-topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 18px;
+  border-bottom:1px solid #18253b;
+  color:#71809b;
+  font-size:10px;
+  letter-spacing:1.3px;
+}
+
+.scan-lights{
+  display:flex;
+  gap:6px;
+}
+
+.scan-lights span{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#273550;
+}
+
+.scan-lights span:first-child{
+  background:#52b7c9;
+}
+
 .upload{
-  min-height:310px;border:1px dashed #52699d;border-radius:18px;
-  display:grid;place-items:center;text-align:center;padding:35px;
-  background:#080d19;transition:.2s;
+  margin:18px;
+  min-height:350px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:40px;
+  border-radius:17px;
+  border:1px dashed #354d70;
+  background:
+    radial-gradient(circle at center,#0c1828 0,transparent 55%),
+    #050912;
+  transition:.25s;
 }
-.upload.drag{border-color:var(--cyan);background:#0c1930}
-.uploadIcon{font-size:48px}
-.upload p{color:var(--muted)}
-input[type=file]{display:none}
-.previewArea{display:none;grid-template-columns:1fr 1fr;gap:20px}
-.imageBox{
-  min-height:390px;background:#030610;border-radius:16px;
-  display:grid;place-items:center;position:relative;overflow:hidden;
+
+.upload.drag{
+  border-color:#62c7db;
+  background:#08131f;
 }
-.imageBox img{max-width:100%;max-height:450px;object-fit:contain}
+
+.upload-symbol{
+  width:70px;
+  height:70px;
+  display:grid;
+  place-items:center;
+  margin:auto;
+  border-radius:18px;
+  border:1px solid #304969;
+  background:#0a1625;
+  color:#71cfe1;
+  font-size:25px;
+}
+
+.upload h2{
+  margin:20px 0 7px;
+}
+
+.upload p{
+  color:#77849d;
+}
+
+input[type=file]{
+  display:none;
+}
+
+.preview-area{
+  display:none;
+  grid-template-columns:1.05fr .95fr;
+  gap:18px;
+  padding:18px;
+}
+
+.image-box{
+  min-height:430px;
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden;
+  border-radius:15px;
+  border:1px solid #192841;
+  background:#02050b;
+}
+
+.image-box img{
+  max-width:100%;
+  max-height:480px;
+  object-fit:contain;
+}
+
+.image-corners{
+  position:absolute;
+  inset:15px;
+  pointer-events:none;
+  border:1px solid #62cbe716;
+}
+
 .scanline{
-  display:none;position:absolute;left:0;right:0;height:2px;
-  background:var(--cyan);box-shadow:0 0 20px var(--cyan);
-  animation:scan 1.5s linear infinite;
+  position:absolute;
+  left:0;
+  right:0;
+  height:2px;
+  display:none;
+  background:#62d5ea;
+  box-shadow:
+    0 0 10px #62d5ea,
+    0 0 30px #62d5ea;
+  animation:scanline 1.5s linear infinite;
 }
-@keyframes scan{from{top:2%}to{top:98%}}
-.info{display:flex;flex-direction:column;gap:14px}
-.small{font-size:13px;color:var(--muted);line-height:1.5}
-.metadata{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+
+@keyframes scanline{
+  from{top:2%}
+  to{top:98%}
+}
+
+.info-panel{
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.metadata{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
 .metadata div{
-  background:#0d1428;border:1px solid #202e52;border-radius:11px;padding:13px;
+  padding:13px;
+  border-radius:10px;
+  border:1px solid #1e2c46;
+  background:#09101d;
 }
+
 .metadata b{
-  display:block;font-size:10px;color:#7f8cab;margin-bottom:5px;
+  display:block;
+  margin-bottom:5px;
+  color:#62718d;
+  font-size:9px;
+  letter-spacing:1px;
 }
-.metadata span{font-size:13px;word-break:break-word}
+
+.metadata span{
+  display:block;
+  color:#c5cee0;
+  font-size:12px;
+  word-break:break-word;
+}
+
 .consent{
-  display:flex;gap:10px;padding:14px;background:#0c1428;
-  border:1px solid #293760;border-radius:12px;font-size:12px;
-  color:#c0c9e1;line-height:1.5;
+  display:flex;
+  gap:10px;
+  padding:14px;
+  border-radius:11px;
+  border:1px solid #243654;
+  background:#091221;
+  color:#9ba8bf;
+  line-height:1.5;
+  font-size:11px;
 }
-.consent input{accent-color:var(--cyan)}
+
+.consent input{
+  accent-color:#5ccde4;
+}
+
+.scan-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
 .status{
-  display:none;margin-top:20px;padding:20px;background:#0b1224;
-  border:1px solid #26345a;border-radius:14px;
+  display:none;
+  margin:0 18px 18px;
+  padding:17px;
+  border-radius:12px;
+  border:1px solid #1d2e4a;
+  background:#08101d;
 }
+
+.status-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  font-size:12px;
+}
+
+.status-row span:last-child{
+  color:#58cde5;
+}
+
 .progress{
-  height:8px;background:#161d32;border-radius:99px;overflow:hidden;margin-top:12px;
+  height:5px;
+  margin-top:12px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#121b2c;
 }
+
 .progress span{
-  height:100%;display:block;width:0;
-  background:linear-gradient(90deg,var(--cyan),var(--purple));transition:.4s;
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#55c8de,#796bc7);
+  transition:.45s;
 }
 
-/* RESULTS */
-.results{display:none;margin-top:25px}
-.resultHeader{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:15px;margin-bottom:15px;
+/* =========================================================
+   RESULTS
+========================================================= */
+
+.results{
+  display:none;
+  padding:5px 18px 20px;
 }
-.resultHeader h2{margin:0}
-.count{font-size:13px;color:var(--cyan);font-weight:800}
-.resultGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.resultCard{
-  background:#0b1224;border:1px solid #29365e;border-radius:17px;
-  padding:17px;overflow:hidden;transition:.2s;
+
+.result-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin:18px 0;
 }
-.resultCard:hover{border-color:#49628e;transform:translateY(-2px)}
+
+.result-header h2{
+  margin:0;
+}
+
+.count{
+  color:#66cadd;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.result-card{
+  position:relative;
+  overflow:hidden;
+  padding:15px;
+  border:1px solid #1e2d47;
+  border-radius:15px;
+  background:#080f1b;
+  transition:.25s;
+}
+
+.result-card:hover{
+  transform:translateY(-3px);
+  border-color:#34506f;
+}
+
 .thumb{
-  height:180px;border-radius:12px;background:#040710;
-  display:grid;place-items:center;overflow:hidden;margin-bottom:14px;
+  height:190px;
+  display:grid;
+  place-items:center;
+  margin-bottom:13px;
+  overflow:hidden;
+  border-radius:10px;
+  background:#03060b;
 }
-.thumb img{width:100%;height:100%;object-fit:contain}
-.resultType{
-  font-size:10px;font-weight:900;letter-spacing:1px;color:var(--cyan);
+
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
-.resultCard h3{margin:8px 0;font-size:17px}
+
+.result-type{
+  color:#5fc9dd;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.4px;
+}
+
+.result-card h3{
+  margin:7px 0;
+  font-size:16px;
+}
+
 .domain{
-  font-size:12px;color:var(--muted);margin-bottom:14px;word-break:break-all;
+  margin-bottom:13px;
+  color:#74819a;
+  font-size:11px;
+  word-break:break-all;
 }
-.empty{
-  padding:30px;border:1px solid #29365e;background:#0b1224;
-  border-radius:16px;text-align:center;color:#9ba8c8;
-}
+
+.empty,
 .error{
-  padding:18px;background:#2b1119;border:1px solid #7a3045;
-  border-radius:14px;color:#ffb6c7;
+  padding:28px;
+  border-radius:14px;
+  text-align:center;
 }
 
-/* ABOUT */
-.about{
-  max-width:1050px;margin:auto;padding:0 22px 90px;
-  display:grid;grid-template-columns:1fr 1fr;gap:15px;
+.empty{
+  color:#8795ad;
+  border:1px solid #21314b;
+  background:#08101c;
 }
 
-/* MODALS */
+.error{
+  color:#f0a6b6;
+  border:1px solid #643143;
+  background:#231018;
+}
+
+/* =========================================================
+   KNOWLEDGE / ABOUT
+========================================================= */
+
+.knowledge{
+  padding:20px 0 110px;
+}
+
+.knowledge-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.knowledge-card{
+  position:relative;
+  min-height:210px;
+  padding:22px;
+  border-radius:16px;
+  border:1px solid #1d2a43;
+  background:#070c15;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.knowledge-card:hover{
+  border-color:#36516f;
+  transform:translateY(-3px);
+}
+
+.knowledge-card h3{
+  margin:35px 0 8px;
+}
+
+.knowledge-card p{
+  color:#78869f;
+  line-height:1.6;
+  font-size:12px;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
 .modal{
-  position:fixed;inset:0;background:#01030bd9;z-index:1000;
-  display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(12px);
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:#010308df;
+  backdrop-filter:blur(14px);
 }
-.modal.open{display:flex}
+
+.modal.open{
+  display:flex;
+}
+
 .modal-box{
-  width:min(520px,100%);max-height:90vh;overflow:auto;
-  background:linear-gradient(180deg,#10182c,#080d19);
-  border:1px solid #34446f;border-radius:22px;padding:25px;
-  box-shadow:0 30px 100px #000c;
+  width:min(680px,100%);
+  max-height:88vh;
+  overflow:auto;
+  position:relative;
+  border:1px solid #2a3b59;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 90% 0%,#152440 0,transparent 30%),
+    #080d17;
+  box-shadow:0 40px 120px #000d;
+  animation:modalIn .28s ease;
 }
+
+@keyframes modalIn{
+  from{
+    opacity:0;
+    transform:translateY(15px) scale(.97);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
 .modal-head{
-  display:flex;align-items:center;justify-content:space-between;gap:15px;
+  padding:22px 24px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+  border-bottom:1px solid #19253a;
 }
+
+.modal-head h2{
+  margin:10px 0 0;
+  font-size:27px;
+}
+
 .close{
-  width:38px;height:38px;padding:0;border-radius:10px;
-  background:#111a2d;color:white;border:1px solid #2d3d63;
-}
-.modal-box p{color:#9ba8c8;line-height:1.65}
-.input{
-  width:100%;padding:14px;margin:7px 0;background:#080e1d;
-  border:1px solid #2b3b62;border-radius:11px;color:white;outline:none;
-}
-.input:focus{border-color:var(--cyan)}
-.auth-tabs{display:flex;gap:7px;margin:18px 0}
-.auth-tabs button{flex:1}
-.divider{
-  display:flex;align-items:center;gap:12px;color:#687797;
-  font-size:11px;margin:17px 0;
-}
-.divider:before,.divider:after{
-  content:"";height:1px;background:#273554;flex:1;
-}
-.provider{
-  width:100%;background:#fff;color:#111;margin-bottom:9px;
-}
-.provider.disabled{opacity:.55}
-.auth-note{
-  padding:12px;background:#0d162b;border:1px solid #29385e;
-  border-radius:10px;color:#8fa0c5;font-size:11px;line-height:1.5;
-}
-.account-pill{
-  display:none;background:#0d162a;border:1px solid #2d416b;
-  color:white;border-radius:999px;padding:9px 13px;cursor:pointer;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  color:#aab7ce;
+  background:#0d1524;
+  border:1px solid #283953;
 }
 
-/* FOOTER */
+.modal-body{
+  padding:24px;
+}
+
+.modal-body p{
+  color:#919eb5;
+  line-height:1.75;
+}
+
+.modal-list{
+  display:grid;
+  gap:9px;
+  margin-top:20px;
+}
+
+.modal-point{
+  padding:13px;
+  border-radius:10px;
+  color:#a8b4c9;
+  font-size:12px;
+  line-height:1.5;
+  border:1px solid #1f2e46;
+  background:#0a111e;
+}
+
+.modal-note{
+  margin-top:20px;
+  padding:14px;
+  border-left:2px solid #5cc4d9;
+  background:#091522;
+  color:#8796af;
+  font-size:11px;
+  line-height:1.6;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
 footer{
-  text-align:center;border-top:1px solid #ffffff10;
-  padding:30px;color:#7180a4;font-size:12px;
-}
-.footer-links{margin-top:12px}
-.footer-links button{
-  background:none;color:#8292b7;padding:5px;font-size:12px;
+  border-top:1px solid #ffffff0b;
+  padding:40px 20px;
+  color:#62718b;
+  text-align:center;
+  font-size:11px;
 }
 
-/* MOBILE */
-@media(max-width:800px){
-  .links{display:none}
-  .features,.about,.resultGrid,.previewArea{grid-template-columns:1fr}
-  .hero h1{letter-spacing:-2px}
-  .nav-actions .secondary{display:none}
-  .intro-logo{letter-spacing:-2px}
+.footer-actions{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:14px;
 }
+
+.footer-actions button{
+  color:#7c8ca6;
+  background:transparent;
+  padding:5px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+  .links{
+    display:none;
+  }
+
+  .bento{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .info-card.large{
+    grid-column:span 2;
+    grid-row:auto;
+    min-height:420px;
+  }
+
+  .process{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .knowledge-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .preview-area{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:620px){
+
+  .container{
+    width:min(100% - 26px,1120px);
+  }
+
+  .nav-actions .secondary{
+    display:none;
+  }
+
+  .hero{
+    min-height:620px;
+  }
+
+  .hero h1{
+    letter-spacing:-2.5px;
+  }
+
+  .hero-status{
+    grid-template-columns:1fr;
+  }
+
+  .hero-status div{
+    border-right:0;
+    border-bottom:1px solid #1b2a43;
+  }
+
+  .bento,
+  .process,
+  .knowledge-grid,
+  .result-grid{
+    grid-template-columns:1fr;
+  }
+
+  .info-card.large{
+    grid-column:auto;
+    min-height:450px;
+  }
+
+  .metadata{
+    grid-template-columns:1fr;
+  }
+
+  .intro-heading{
+    letter-spacing:-1.5px;
+  }
+
+  .intro-brand{
+    letter-spacing:-2px;
+  }
+
+  .web-card{
+    width:120px;
+    height:80px;
+  }
+
+  .intro-description{
+    font-size:12px;
+  }
+
+  .intro-scenes{
+    display:none;
+  }
+
+}
+
+/* reduced motion */
 @media(prefers-reduced-motion:reduce){
-  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important}
+
+  *,
+  *:before,
+  *:after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+
 }
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <div class="intro-grid"></div>
-  <div class="intro-glow"></div>
-  <div class="intro-nodes" id="introNodes"></div>
+<div class="site-grid"></div>
+<div class="site-noise"></div>
+<div class="ambient one"></div>
+<div class="ambient two"></div>
 
-  <button class="skip" onclick="finishIntro()">SKIP INTRO →</button>
+<!-- =====================================================
+     CINEMATIC INTRO
+===================================================== -->
 
-  <div class="intro-content">
-    <div class="intro-kicker" id="introKicker">SYSTEM BOOT</div>
+<div id="cinematicIntro">
 
-    <div class="intro-logo">
+  <canvas id="introCanvas"></canvas>
+
+  <div class="intro-vignette"></div>
+  <div class="intro-scanlines"></div>
+
+  <div class="intro-top">
+
+    <div class="intro-system">
+      TRACELENS / VISUAL INTELLIGENCE
+    </div>
+
+    <button
+      class="skip-intro"
+      onclick="finishIntro()"
+    >
+      SKIP INTRO →
+    </button>
+
+  </div>
+
+  <div class="intro-center">
+
+    <div class="intro-copy" id="introCopy">
+
+      <div class="intro-step" id="introStep">
+        01 / INITIALIZE
+      </div>
+
+      <h1 class="intro-heading" id="introHeading">
+        Entering the visual web.
+      </h1>
+
+      <p class="intro-description" id="introDescription">
+        Building a path through publicly indexed visual information.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- fictional visual photo card -->
+  <div class="intro-photo" id="introPhoto">
+
+    <div class="photo-person"></div>
+    <div class="photo-body"></div>
+
+    <div class="photo-hud"></div>
+
+    <div class="photo-scan"></div>
+
+  </div>
+
+  <div class="web-card w1" id="web1">
+    <span class="match">VISUAL MATCH</span>
+  </div>
+
+  <div class="web-card w2" id="web2">
+    <span class="match">SOURCE</span>
+  </div>
+
+  <div class="web-card w3" id="web3">
+    <span class="match">INDEXED</span>
+  </div>
+
+  <div class="web-card w4" id="web4">
+    <span class="match">VISUAL MATCH</span>
+  </div>
+
+  <div class="intro-logo-reveal" id="introLogoReveal">
+
+    <div class="intro-ring"></div>
+
+    <div class="logo-reveal-inner">
+
+      <div class="intro-brand">
+        Trace<span>Lens</span>
+      </div>
+
+      <div class="intro-tagline">
+        PHOTO PROTECTION INTELLIGENCE
+      </div>
+
+      <div class="system-ready">
+        ● SYSTEM READY
+      </div>
+
+      <button
+        class="primary enter-site"
+        onclick="finishIntro()"
+      >
+        ENTER TRACELENS →
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="intro-bottom">
+
+    <div class="intro-progress-track">
+      <span id="introProgress"></span>
+    </div>
+
+    <div class="intro-scenes">
+
+      <span id="scene1" class="active">01 TUNNEL</span>
+      <span id="scene2">02 SCAN</span>
+      <span id="scene3">03 NETWORK</span>
+      <span id="scene4">04 TRACE</span>
+      <span id="scene5">05 READY</span>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
+     NAV
+===================================================== -->
+
+<nav>
+
+  <div class="nav-inner">
+
+    <div
+      class="logo"
+      onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    >
       Trace<span>Lens</span>
     </div>
 
-    <div class="intro-title" id="introTitle">
-      Initializing Visual Intelligence
+    <div class="links">
+
+      <a href="#">Home</a>
+      <a href="#scan">Scan</a>
+      <a href="#how">How It Works</a>
+      <a href="#learn">Privacy</a>
+
     </div>
 
-    <div class="intro-sub" id="introSub">
-      SECURE SYSTEM STARTUP
+    <div class="nav-actions">
+
+      <button
+        class="secondary"
+        onclick="openInfo('accounts')"
+      >
+        Account
+      </button>
+
+      <button
+        class="primary"
+        onclick="location.href='#scan'"
+      >
+        + New Scan
+      </button>
+
     </div>
 
-    <div class="intro-scan"></div>
-
-    <button
-      class="primary"
-      id="enterBtn"
-      onclick="finishIntro()"
-      style="display:none;margin:auto"
-    >
-      ENTER TRACELENS →
-    </button>
   </div>
 
-  <div class="intro-progress" id="introProgress"></div>
-</div>
-
-<!-- NAV -->
-<nav>
-  <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    Trace<span>Lens</span>
-  </div>
-
-  <div class="links">
-    <a href="#">Home</a>
-    <a href="#scan">Scan</a>
-    <a href="#features">How It Works</a>
-    <a href="#privacy">Privacy</a>
-    <a href="#about">About</a>
-  </div>
-
-  <div class="nav-actions">
-    <button class="secondary" id="loginButton" onclick="openAuth('login')">
-      Log In
-    </button>
-
-    <button class="primary" id="signupButton" onclick="openAuth('signup')">
-      Create Account
-    </button>
-
-    <button class="account-pill" id="accountPill" onclick="openAccount()">
-      Guest
-    </button>
-  </div>
 </nav>
 
-<!-- HERO -->
+<!-- =====================================================
+     HERO
+===================================================== -->
+
 <section class="hero">
-  <div class="badge">AI • PHOTO PROTECTION</div>
 
-  <h1>
-    Find where your
-    <span class="grad">photos appear online.</span>
-  </h1>
+  <div class="hero-orbit"></div>
 
-  <p>
-    TraceLens searches publicly indexed webpages for copies and modified
-    versions of a photo you are authorized to check.
-  </p>
+  <div class="hero-content">
 
-  <div class="actions">
-    <a href="#scan" class="btn primary">⌕ Scan My Photo</a>
-    <a href="#features" class="btn secondary">How It Works</a>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="features" id="features">
-
-  <div class="card click-card"
-       onclick="openInfo('Search the Web','TraceLens sends the submitted image through the configured reverse-image search workflow and displays genuine webpages returned by the search provider. Results depend on what the provider has indexed.')">
-    <div class="icon">⌕</div>
-    <h3>Search the Web</h3>
-    <p>Look for copies and visually matching versions of your photo.</p>
-    <span class="small">Click to learn more →</span>
-  </div>
-
-  <div class="card click-card"
-       onclick="openInfo('Open Sources','Each result uses the actual destination URL returned by the search provider. OPEN SOURCE opens that webpage in a new tab so you can inspect the source yourself.')">
-    <div class="icon">↗</div>
-    <h3>Open Sources</h3>
-    <p>Visit genuine webpages returned by the search provider.</p>
-    <span class="small">Click to learn more →</span>
-  </div>
-
-  <div class="card click-card"
-       onclick="openInfo('Privacy & Limitations','TraceLens is for checking a specific photo you own or have permission to check. It does not identify unknown private people or search for unrelated photographs solely from a person’s face.')">
-    <div class="icon">◈</div>
-    <h3>Privacy First</h3>
-    <p>Understand what the search can and cannot do.</p>
-    <span class="small">Click to learn more →</span>
-  </div>
-
-</section>
-
-<!-- SCAN -->
-<section class="scanSection" id="scan">
-
-  <div class="title">
-    <div class="badge">NEW SCAN</div>
-    <h2>Scan Your Photo</h2>
-    <p>Choose or drag a photo below.</p>
-  </div>
-
-  <div class="scanCard">
-
-    <div class="upload" id="upload">
-      <div>
-        <div class="uploadIcon">⬆</div>
-        <h2>Drop your photo here</h2>
-        <p>JPG • JPEG • PNG • WEBP</p>
-
-        <div class="actions">
-          <button class="primary" onclick="fileInput.click()">
-            Choose Photo
-          </button>
-        </div>
-
-        <input id="fileInput"
-               type="file"
-               accept="image/jpeg,image/png,image/webp">
-      </div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      VISUAL SEARCH • PHOTO PROTECTION
     </div>
 
-    <div class="previewArea" id="previewArea">
+    <h1>
+      Discover where your
+      <span class="grad">photo appears online.</span>
+    </h1>
 
-      <div class="imageBox">
-        <img id="preview" alt="Selected photo">
-        <div class="scanline" id="scanline"></div>
+    <p>
+      Search publicly indexed webpages for copies and visually
+      matching versions of a specific photo you own or have
+      permission to check.
+    </p>
+
+    <div class="actions">
+
+      <a href="#scan" class="primary btn">
+        ⌕ Scan My Photo
+      </a>
+
+      <button
+        class="secondary"
+        onclick="openInfo('how')"
+      >
+        How TraceLens Works
+      </button>
+
+    </div>
+
+    <div class="hero-status">
+
+      <div>
+        <b>REAL SOURCES</b>
+        <span>No fabricated result links</span>
       </div>
 
-      <div class="info">
+      <div>
+        <b>PUBLIC WEB</b>
+        <span>Search indexed webpages</span>
+      </div>
+
+      <div>
+        <b>PERMISSION FIRST</b>
+        <span>Designed for authorized checks</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     FEATURE BENTO
+===================================================== -->
+
+<section class="features-section" id="how">
+
+  <div class="container">
+
+    <div class="section-title">
+
+      <div class="badge">
+        EXPLORE TRACELENS
+      </div>
+
+      <h2>
+        Understand your photo's
+        <span class="grad">public footprint.</span>
+      </h2>
+
+      <p>
+        Every panel below is interactive. Select one for a detailed
+        explanation of the feature and its limitations.
+      </p>
+
+    </div>
+
+    <div class="bento">
+
+      <article
+        class="info-card large"
+        onclick="openInfo('visualSearch')"
+      >
+
+        <div class="card-shine"></div>
+
+        <div class="card-icon">⌕</div>
+
+        <h3>Visual Web Search</h3>
+
+        <p>
+          Submit a specific image and inspect webpages returned by
+          the configured reverse-image search provider.
+        </p>
+
+        <div class="network-demo">
+
+          <div class="demo-center"></div>
+          <div class="demo-node"></div>
+          <div class="demo-node"></div>
+          <div class="demo-node"></div>
+          <div class="demo-node"></div>
+
+        </div>
+
+        <span class="learn">
+          EXPLORE FEATURE →
+        </span>
+
+      </article>
+
+      <article
+        class="info-card"
+        onclick="openInfo('sources')"
+      >
+
+        <div class="card-shine"></div>
+
+        <div class="card-icon">↗</div>
+
+        <h3>Real Sources</h3>
+
+        <p>
+          Open the actual destination URLs returned by the search
+          provider and inspect the webpages yourself.
+        </p>
+
+        <span class="learn">
+          DETAILS →
+        </span>
+
+      </article>
+
+      <article
+        class="info-card"
+        onclick="openInfo('privacy')"
+      >
+
+        <div class="card-shine"></div>
+
+        <div class="card-icon">◇</div>
+
+        <h3>Privacy First</h3>
+
+        <p>
+          TraceLens searches for the submitted image rather than
+          identifying unknown private people.
+        </p>
+
+        <span class="learn">
+          PRIVACY CENTER →
+        </span>
+
+      </article>
+
+      <article
+        class="info-card"
+        onclick="openInfo('limitations')"
+      >
+
+        <div class="card-shine"></div>
+
+        <div class="card-icon">◌</div>
+
+        <h3>Know the Limits</h3>
+
+        <p>
+          No result does not prove that an image has never appeared
+          somewhere else.
+        </p>
+
+        <span class="learn">
+          LEARN MORE →
+        </span>
+
+      </article>
+
+      <article
+        class="info-card"
+        onclick="openInfo('review')"
+      >
+
+        <div class="card-shine"></div>
+
+        <div class="card-icon">✓</div>
+
+        <h3>Review Yourself</h3>
+
+        <p>
+          Search results provide leads. You decide what a source
+          means after reviewing it.
+        </p>
+
+        <span class="learn">
+          DETAILS →
+        </span>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     PROCESS
+===================================================== -->
+
+<section class="process-section">
+
+  <div class="container">
+
+    <div class="section-title">
+
+      <div class="badge">
+        WORKFLOW
+      </div>
+
+      <h2>From image to source.</h2>
+
+      <p>
+        Click any stage to learn what happens during a TraceLens scan.
+      </p>
+
+    </div>
+
+    <div class="process">
+
+      <div
+        class="process-card"
+        onclick="openInfo('upload')"
+      >
+        <span class="process-number">01</span>
+        <h3>Upload</h3>
+        <p>
+          Choose the specific photo you are authorized to check.
+        </p>
+      </div>
+
+      <div
+        class="process-card"
+        onclick="openInfo('permission')"
+      >
+        <span class="process-number">02</span>
+        <h3>Permission</h3>
+        <p>
+          Confirm that you are allowed to search the submitted image.
+        </p>
+      </div>
+
+      <div
+        class="process-card"
+        onclick="openInfo('search')"
+      >
+        <span class="process-number">03</span>
+        <h3>Search</h3>
+        <p>
+          TraceLens sends the image into the configured search workflow.
+        </p>
+      </div>
+
+      <div
+        class="process-card"
+        onclick="openInfo('inspect')"
+      >
+        <span class="process-number">04</span>
+        <h3>Inspect</h3>
+        <p>
+          Open returned source pages and review them yourself.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =====================================================
+     SCANNER
+===================================================== -->
+
+<section class="scan-section" id="scan">
+
+  <div class="container">
+
+    <div class="section-title">
+
+      <div class="badge">
+        NEW SCAN
+      </div>
+
+      <h2>Search a photo.</h2>
+
+      <p>
+        JPG, PNG and WEBP files up to 10 MB.
+      </p>
+
+    </div>
+
+    <div class="scan-shell">
+
+      <div class="scan-topbar">
+
+        <div class="scan-lights">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <span>
+          TRACELENS / VISUAL SEARCH CONSOLE
+        </span>
+
+      </div>
+
+      <div class="upload" id="upload">
 
         <div>
-          <div class="badge">PHOTO READY</div>
-          <h2>Ready to search</h2>
-          <p class="small">
-            Confirm that you're allowed to check this photo.
+
+          <div class="upload-symbol">
+            ↑
+          </div>
+
+          <h2>
+            Drop your photo here
+          </h2>
+
+          <p>
+            Select an image to begin a visual search.
           </p>
+
+          <div class="actions">
+
+            <button
+              class="primary"
+              onclick="fileInput.click()"
+            >
+              Choose Photo
+            </button>
+
+            <button
+              class="secondary"
+              onclick="openInfo('uploadHelp')"
+            >
+              What can I upload?
+            </button>
+
+          </div>
+
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+          >
+
         </div>
 
-        <div class="metadata">
-          <div><b>FILE</b><span id="filename">—</span></div>
-          <div><b>SIZE</b><span id="filesize">—</span></div>
-          <div><b>TYPE</b><span id="filetype">—</span></div>
-          <div><b>RESOLUTION</b><span id="resolution">—</span></div>
+      </div>
+
+      <div
+        class="preview-area"
+        id="previewArea"
+      >
+
+        <div class="image-box">
+
+          <img
+            id="preview"
+            alt="Selected image preview"
+          >
+
+          <div class="image-corners"></div>
+
+          <div
+            class="scanline"
+            id="scanline"
+          ></div>
+
         </div>
 
-        <label class="consent">
-          <input type="checkbox" id="consent">
-          <span>
-            I confirm this is my photo or I have permission to check
-            where this specific image has been reposted.
+        <div class="info-panel">
+
+          <div>
+
+            <div class="badge">
+              <span class="badge-dot"></span>
+              PHOTO READY
+            </div>
+
+            <h2>
+              Ready for visual search
+            </h2>
+
+            <p style="color:#7d8aa2;line-height:1.6;font-size:13px">
+              Review the file information and confirm permission
+              before starting.
+            </p>
+
+          </div>
+
+          <div class="metadata">
+
+            <div>
+              <b>FILE</b>
+              <span id="filename">—</span>
+            </div>
+
+            <div>
+              <b>SIZE</b>
+              <span id="filesize">—</span>
+            </div>
+
+            <div>
+              <b>TYPE</b>
+              <span id="filetype">—</span>
+            </div>
+
+            <div>
+              <b>RESOLUTION</b>
+              <span id="resolution">—</span>
+            </div>
+
+          </div>
+
+          <label class="consent">
+
+            <input
+              type="checkbox"
+              id="consent"
+            >
+
+            <span>
+              I confirm this is my photo or I have permission to
+              check where this specific image has been reposted.
+            </span>
+
+          </label>
+
+          <div class="scan-actions">
+
+            <button
+              class="primary"
+              id="start"
+              disabled
+              onclick="scanPhoto()"
+            >
+              ⌕ Start Search
+            </button>
+
+            <button
+              class="secondary"
+              onclick="removePhoto()"
+            >
+              Remove
+            </button>
+
+            <button
+              class="ghost"
+              onclick="openInfo('searchPrivacy')"
+            >
+              Privacy
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div
+        class="status"
+        id="status"
+      >
+
+        <div class="status-row">
+
+          <strong id="statusText">
+            Preparing image...
+          </strong>
+
+          <span id="statusPercent">
+            0%
           </span>
-        </label>
 
-        <div class="actions"
-             style="justify-content:flex-start;margin-top:0">
+        </div>
 
-          <button class="primary"
-                  id="start"
-                  disabled
-                  onclick="scanPhoto()">
-            ⌕ Start Search
-          </button>
-
-          <button class="secondary" onclick="removePhoto()">
-            Remove
-          </button>
+        <div class="progress">
+          <span id="bar"></span>
         </div>
 
       </div>
-    </div>
 
-    <div class="status" id="status">
-      <strong id="statusText">Preparing image...</strong>
+      <div
+        class="results"
+        id="results"
+      >
 
-      <div class="progress">
-        <span id="bar"></span>
+        <div class="result-header">
+
+          <div>
+            <div class="badge">
+              SEARCH RESULTS
+            </div>
+            <h2>
+              Found Online
+            </h2>
+          </div>
+
+          <div
+            class="count"
+            id="resultCount"
+          >
+            0 RESULTS
+          </div>
+
+        </div>
+
+        <div id="resultContent"></div>
+
       </div>
-    </div>
-
-    <div class="results" id="results">
-
-      <div class="resultHeader">
-        <h2>Found Online</h2>
-        <div class="count" id="resultCount">0 RESULTS</div>
-      </div>
-
-      <div id="resultContent"></div>
 
     </div>
 
   </div>
+
 </section>
 
-<!-- ABOUT -->
-<section class="about" id="about">
+<!-- =====================================================
+     KNOWLEDGE
+===================================================== -->
 
-  <div class="card click-card"
-       onclick="openInfo('About TraceLens','TraceLens is a privacy-focused project designed to help people investigate where a specific photo they are authorized to check may have been reposted on publicly indexed webpages.')">
-    <div class="badge">ABOUT</div>
-    <h2>Protect your digital image.</h2>
-    <p>Learn what TraceLens is designed to do.</p>
-  </div>
+<section class="knowledge" id="learn">
 
-  <div class="card click-card"
-       id="privacy"
-       onclick="openInfo('Search With Permission','Only search photos that are yours or that you have permission to check. Search results are not proof that a use is authorized or unauthorized; users should review sources themselves.')">
-    <div class="badge">PRIVACY</div>
-    <h2>Search with permission.</h2>
-    <p>Learn about responsible use and privacy.</p>
+  <div class="container">
+
+    <div class="section-title">
+
+      <div class="badge">
+        TRACE LENS KNOWLEDGE
+      </div>
+
+      <h2>
+        Explore the details.
+      </h2>
+
+      <p>
+        Select any topic for a detailed popup instead of filling
+        the homepage with long paragraphs.
+      </p>
+
+    </div>
+
+    <div class="knowledge-grid">
+
+      <div
+        class="knowledge-card"
+        onclick="openInfo('about')"
+      >
+        <span class="process-number">
+          ABOUT
+        </span>
+
+        <h3>What is TraceLens?</h3>
+
+        <p>
+          Learn the purpose behind the project and what it is
+          designed to search.
+        </p>
+      </div>
+
+      <div
+        class="knowledge-card"
+        onclick="openInfo('privacy')"
+      >
+        <span class="process-number">
+          PRIVACY
+        </span>
+
+        <h3>Responsible Search</h3>
+
+        <p>
+          Understand the permission-first rules behind TraceLens.
+        </p>
+      </div>
+
+      <div
+        class="knowledge-card"
+        onclick="openInfo('technology')"
+      >
+        <span class="process-number">
+          TECHNOLOGY
+        </span>
+
+        <h3>How the Search Works</h3>
+
+        <p>
+          See the high-level technology flow without exposing
+          private credentials.
+        </p>
+      </div>
+
+      <div
+        class="knowledge-card"
+        onclick="openInfo('resultsInfo')"
+      >
+        <span class="process-number">
+          RESULTS
+        </span>
+
+        <h3>Understanding Results</h3>
+
+        <p>
+          Learn what a returned result means and what it does not mean.
+        </p>
+      </div>
+
+      <div
+        class="knowledge-card"
+        onclick="openInfo('security')"
+      >
+        <span class="process-number">
+          SECURITY
+        </span>
+
+        <h3>API Protection</h3>
+
+        <p>
+          Learn why sensitive API credentials stay on the server.
+        </p>
+      </div>
+
+      <div
+        class="knowledge-card"
+        onclick="openInfo('future')"
+      >
+        <span class="process-number">
+          ROADMAP
+        </span>
+
+        <h3>What's Next?</h3>
+
+        <p>
+          Accounts, saved searches and more review tools can be
+          added later.
+        </p>
+      </div>
+
+    </div>
+
   </div>
 
 </section>
 
 <footer>
+
   TraceLens • Privacy-focused photo protection
 
-  <div class="footer-links">
-    <button onclick="replayIntro()">Replay Intro</button>
-    •
-    <button onclick="openAuth('login')">Account</button>
+  <div class="footer-actions">
+
+    <button onclick="replayIntro()">
+      Replay Intro
+    </button>
+
+    <button onclick="openInfo('privacy')">
+      Privacy
+    </button>
+
+    <button onclick="openInfo('about')">
+      About
+    </button>
+
   </div>
+
 </footer>
 
-<!-- INFO MODAL -->
-<div class="modal" id="infoModal">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="infoTitle">Information</h2>
-      <button class="close" onclick="closeModal('infoModal')">×</button>
-    </div>
+<!-- =====================================================
+     UNIVERSAL INFORMATION MODAL
+===================================================== -->
 
-    <p id="infoText"></p>
-  </div>
-</div>
+<div
+  class="modal"
+  id="infoModal"
+>
 
-<!-- AUTH MODAL -->
-<div class="modal" id="authModal">
   <div class="modal-box">
 
     <div class="modal-head">
+
       <div>
-        <div class="badge">TRACELENS ACCOUNT</div>
-        <h2 id="authTitle">Welcome back</h2>
+
+        <div
+          class="badge"
+          id="modalBadge"
+        >
+          TRACE LENS
+        </div>
+
+        <h2 id="modalTitle">
+          Information
+        </h2>
+
       </div>
 
-      <button class="close" onclick="closeModal('authModal')">×</button>
-    </div>
-
-    <div class="auth-tabs">
-      <button id="loginTab"
-              class="primary"
-              onclick="setAuthMode('login')">
-        Log In
+      <button
+        class="close"
+        onclick="closeInfo()"
+        aria-label="Close"
+      >
+        ×
       </button>
 
-      <button id="signupTab"
-              class="secondary"
-              onclick="setAuthMode('signup')">
-        Sign Up
-      </button>
     </div>
 
-    <button class="provider disabled"
-            onclick="providerNotConnected('Google')">
-      G&nbsp;&nbsp; Continue with Google
-    </button>
+    <div class="modal-body">
 
-    <button class="provider disabled"
-            onclick="providerNotConnected('Facebook')">
-      f&nbsp;&nbsp; Continue with Facebook
-    </button>
+      <p id="modalText"></p>
 
-    <div class="divider">OR</div>
+      <div
+        class="modal-list"
+        id="modalList"
+      ></div>
 
-    <div id="nameField" style="display:none">
-      <input class="input"
-             id="authName"
-             placeholder="Display name">
+      <div
+        class="modal-note"
+        id="modalNote"
+      ></div>
+
     </div>
-
-    <input class="input"
-           id="authEmail"
-           type="email"
-           placeholder="Email address">
-
-    <input class="input"
-           id="authPassword"
-           type="password"
-           placeholder="Password">
-
-    <input class="input"
-           id="authConfirm"
-           type="password"
-           placeholder="Confirm password"
-           style="display:none">
-
-    <button class="primary"
-            id="authSubmit"
-            style="width:100%;margin-top:10px"
-            onclick="demoAuth()">
-      Log In
-    </button>
-
-    <div class="auth-note" style="margin-top:15px">
-      Account syncing is not connected yet. This interface does not send
-      passwords anywhere and does not create a real cloud account.
-      Guest searching remains fully functional.
-    </div>
-
-    <button class="ghost"
-            style="width:100%;margin-top:10px"
-            onclick="continueGuest()">
-      Continue as Guest
-    </button>
 
   </div>
-</div>
 
-<!-- ACCOUNT MODAL -->
-<div class="modal" id="accountModal">
-  <div class="modal-box">
-
-    <div class="modal-head">
-      <h2>My TraceLens</h2>
-      <button class="close" onclick="closeModal('accountModal')">×</button>
-    </div>
-
-    <div class="card" style="margin-top:10px">
-      <div class="badge">GUEST MODE</div>
-      <h3>Local session</h3>
-      <p>
-        Real cross-device accounts are not connected yet.
-        Your reverse-image search still works normally.
-      </p>
-    </div>
-
-    <button class="primary"
-            style="width:100%;margin-top:15px"
-            onclick="closeModal('accountModal');location.href='#scan'">
-      New Scan
-    </button>
-
-  </div>
 </div>
 
 <script>
+
 /* =========================================================
-   INTRO
+   INFORMATION DATABASE
 ========================================================= */
 
-const intro = document.getElementById("intro");
-const introTitle = document.getElementById("introTitle");
-const introSub = document.getElementById("introSub");
-const introKicker = document.getElementById("introKicker");
-const introProgress = document.getElementById("introProgress");
-const enterBtn = document.getElementById("enterBtn");
+const infoContent = {
 
-let introTimers = [];
+about:{
+  badge:"ABOUT TRACELENS",
+  title:"What is TraceLens?",
+  text:
+    "TraceLens is a privacy-focused visual search project. It helps a user investigate where a specific photo they own or have permission to check may appear on publicly indexed webpages.",
+  points:[
+    "Searches start from a specific submitted image.",
+    "Returned source links come from the configured search provider.",
+    "TraceLens is designed for photo-copy investigation rather than identifying unknown private people.",
+    "The user should inspect returned webpages before drawing conclusions."
+  ],
+  note:
+    "TraceLens search results are investigative leads, not proof that a use is authorized, unauthorized or owned by a particular person."
+},
 
-function createNodes(){
-  const holder = document.getElementById("introNodes");
-  holder.innerHTML = "";
+visualSearch:{
+  badge:"VISUAL SEARCH",
+  title:"Visual Web Search",
+  text:
+    "TraceLens uploads the submitted image through the configured image-hosting workflow and sends its public image URL to the server-side reverse-image search endpoint.",
+  points:[
+    "Can return webpages containing visually related versions of the submitted image.",
+    "Results depend on what the external search provider has indexed.",
+    "The website does not invent missing result URLs.",
+    "Different crops or edits may or may not be discovered depending on the provider."
+  ],
+  note:
+    "A visual match should always be manually reviewed."
+},
 
-  const positions = [
-    [12,22],[24,70],[35,35],[50,18],[60,75],
-    [72,38],[84,66],[91,24],[45,83],[17,50]
-  ];
+sources:{
+  badge:"SOURCE REVIEW",
+  title:"Real Source Pages",
+  text:
+    "TraceLens displays destination URLs supplied by the search provider. The OPEN SOURCE button lets you inspect the returned webpage directly.",
+  points:[
+    "Each result is deduplicated by destination URL.",
+    "The displayed domain helps you understand where the result came from.",
+    "Opening a source happens in a separate browser tab.",
+    "TraceLens does not automatically label a source as misuse."
+  ],
+  note:
+    "Always inspect the source page itself for context."
+},
 
-  positions.forEach((p,i)=>{
-    const n = document.createElement("div");
-    n.className = "node";
-    n.style.left = p[0]+"%";
-    n.style.top = p[1]+"%";
-    n.style.animationDelay = (i*.15)+"s";
-    holder.appendChild(n);
+privacy:{
+  badge:"PRIVACY CENTER",
+  title:"Permission-First Searching",
+  text:
+    "TraceLens should be used with photos you own or photos you have permission to check.",
+  points:[
+    "A permission confirmation is required before a scan starts.",
+    "The project searches the submitted image rather than attempting to identify an unknown private person.",
+    "Do not use the tool to hunt for someone's unrelated accounts or photographs based only on their face.",
+    "Returned pages should be reviewed responsibly."
+  ],
+  note:
+    "Privacy and responsible use are part of the product design, not just a warning message."
+},
+
+limitations:{
+  badge:"LIMITATIONS",
+  title:"What TraceLens Cannot Guarantee",
+  text:
+    "Reverse-image search depends on external indexing and cannot see every image or webpage on the internet.",
+  points:[
+    "Zero returned results does not prove that no copies exist.",
+    "Private pages may not be indexed.",
+    "Recently uploaded images may not yet appear in search indexes.",
+    "Heavy modifications can make matching more difficult."
+  ],
+  note:
+    "TraceLens should communicate uncertainty rather than fabricate confidence or similarity scores."
+},
+
+review:{
+  badge:"REVIEW",
+  title:"You Make the Final Review",
+  text:
+    "TraceLens provides source pages for investigation. It does not automatically decide whether an image use is legitimate.",
+  points:[
+    "Open the source.",
+    "Check the surrounding context.",
+    "Confirm that it is actually the same image.",
+    "Decide what action, if any, is appropriate."
+  ],
+  note:
+    "Future account features can allow users to mark results as reviewed."
+},
+
+how:{
+  badge:"HOW IT WORKS",
+  title:"From Photo to Public Source",
+  text:
+    "The current TraceLens workflow combines browser upload, image hosting, a server-side search endpoint and a reverse-image search provider.",
+  points:[
+    "1. Choose an authorized image.",
+    "2. Confirm permission.",
+    "3. Upload the image.",
+    "4. Search using the server-side API endpoint.",
+    "5. Display genuine returned source pages."
+  ],
+  note:
+    "Sensitive API keys should remain server-side."
+},
+
+upload:{
+  badge:"STEP 01",
+  title:"Upload",
+  text:
+    "Select the exact image you want to investigate. TraceLens currently accepts JPG, PNG and WEBP files.",
+  points:[
+    "Maximum frontend file size: 10 MB.",
+    "A local preview appears before searching.",
+    "File type, size and resolution are shown.",
+    "Nothing searches until you explicitly start the scan."
+  ],
+  note:
+    "Only upload images you are allowed to check."
+},
+
+permission:{
+  badge:"STEP 02",
+  title:"Permission Check",
+  text:
+    "Before starting a search, TraceLens requires the user to confirm that the submitted photo belongs to them or that they have permission to check it.",
+  points:[
+    "The Start Search button stays disabled until confirmation.",
+    "Permission is a user declaration.",
+    "It does not transfer ownership or establish legal rights."
+  ],
+  note:
+    "The permission step encourages responsible use."
+},
+
+search:{
+  badge:"STEP 03",
+  title:"Search",
+  text:
+    "After upload, TraceLens sends the hosted image URL to the project's /api/search endpoint.",
+  points:[
+    "The SearchAPI credential remains in a server environment variable.",
+    "The browser does not need to contain the private API key.",
+    "Search progress is displayed while the request is running."
+  ],
+  note:
+    "Do not move private API credentials into index.html."
+},
+
+inspect:{
+  badge:"STEP 04",
+  title:"Inspect Sources",
+  text:
+    "Returned results are converted into source cards containing the available title, domain, preview and destination URL.",
+  points:[
+    "Duplicate URLs are removed.",
+    "OPEN SOURCE opens the destination directly.",
+    "The user should confirm whether the result is genuinely relevant."
+  ],
+  note:
+    "The result count represents returned unique URLs, not every copy that may exist online."
+},
+
+technology:{
+  badge:"TECHNOLOGY",
+  title:"TraceLens Technology",
+  text:
+    "TraceLens uses a lightweight static frontend with server-side API handling for sensitive search credentials.",
+  points:[
+    "HTML, CSS and JavaScript power the interface.",
+    "Cloudinary currently hosts the uploaded search image.",
+    "The /api/search server function calls the configured reverse-image provider.",
+    "Vercel hosts the current deployment."
+  ],
+  note:
+    "The design keeps the frontend lightweight while protecting the search API credential."
+},
+
+resultsInfo:{
+  badge:"RESULTS",
+  title:"Understanding Search Results",
+  text:
+    "A returned result means the search provider found a webpage it considered relevant to the submitted image.",
+  points:[
+    "It is not automatically proof of copying.",
+    "It is not automatically proof of unauthorized use.",
+    "The source page may provide important context.",
+    "Results can change as search indexes change."
+  ],
+  note:
+    "TraceLens deliberately avoids fabricated similarity percentages."
+},
+
+security:{
+  badge:"SECURITY",
+  title:"Protecting API Credentials",
+  text:
+    "The SearchAPI key belongs in a server-side Vercel environment variable rather than inside public HTML or JavaScript.",
+  points:[
+    "Visitors can inspect frontend source code.",
+    "Server environment variables keep private credentials away from the browser.",
+    "The frontend communicates with /api/search instead of directly exposing the private search key."
+  ],
+  note:
+    "Never paste secret API keys directly into index.html."
+},
+
+future:{
+  badge:"ROADMAP",
+  title:"Future TraceLens Features",
+  text:
+    "The current priority is keeping the working search reliable. Additional features can be added without pretending unfinished systems already work.",
+  points:[
+    "Real Google/email authentication.",
+    "Cross-device saved search history.",
+    "Authorized / Unauthorized / Not Reviewed labels selected by the user.",
+    "Account-level deletion and privacy controls.",
+    "Additional interface effects and result filtering."
+  ],
+  note:
+    "Real accounts require an authentication and database backend; HTML alone cannot securely provide cross-device accounts."
+},
+
+accounts:{
+  badge:"ACCOUNTS",
+  title:"Accounts Are Coming Next",
+  text:
+    "TraceLens does not currently pretend to have working cloud accounts. Real account syncing requires secure authentication and a database.",
+  points:[
+    "Google sign-in can be connected later.",
+    "Email/password authentication requires a real authentication provider.",
+    "Search history must be isolated by authenticated user ID.",
+    "Passwords must never be stored in localStorage."
+  ],
+  note:
+    "Guest search remains available while the account system is unfinished."
+},
+
+uploadHelp:{
+  badge:"UPLOAD HELP",
+  title:"Supported Photos",
+  text:
+    "TraceLens currently accepts common browser image formats for visual search.",
+  points:[
+    "JPG / JPEG",
+    "PNG",
+    "WEBP",
+    "Maximum size: 10 MB"
+  ],
+  note:
+    "Use a clear version of the specific image you want to investigate."
+},
+
+searchPrivacy:{
+  badge:"SEARCH PRIVACY",
+  title:"Before You Search",
+  text:
+    "Your current workflow uploads the selected image to Cloudinary so the reverse-image provider can access a public image URL.",
+  points:[
+    "Do not upload photos you are not authorized to check.",
+    "The current version does not automatically guarantee immediate deletion from Cloudinary.",
+    "A future backend cleanup system can improve temporary-image handling."
+  ],
+  note:
+    "This limitation should remain transparent to users."
+}
+
+};
+
+/* =========================================================
+   INFORMATION MODAL
+========================================================= */
+
+const infoModal =
+document.getElementById("infoModal");
+
+function openInfo(key){
+
+  const data =
+  infoContent[key];
+
+  if(!data){
+    return;
+  }
+
+  document.getElementById(
+    "modalBadge"
+  ).textContent =
+  data.badge;
+
+  document.getElementById(
+    "modalTitle"
+  ).textContent =
+  data.title;
+
+  document.getElementById(
+    "modalText"
+  ).textContent =
+  data.text;
+
+  const list =
+  document.getElementById(
+    "modalList"
+  );
+
+  list.innerHTML = "";
+
+  data.points.forEach(point => {
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "modal-point";
+
+    div.textContent =
+    point;
+
+    list.appendChild(div);
+
   });
+
+  document.getElementById(
+    "modalNote"
+  ).textContent =
+  data.note;
+
+  infoModal.classList.add(
+    "open"
+  );
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
 }
 
-function scheduleIntro(fn,time){
-  const timer = setTimeout(fn,time);
-  introTimers.push(timer);
+function closeInfo(){
+
+  infoModal.classList.remove(
+    "open"
+  );
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
 }
 
-function startIntro(force=false){
+infoModal.addEventListener(
+"click",
+e => {
 
-  introTimers.forEach(clearTimeout);
-  introTimers=[];
+  if(e.target === infoModal){
+    closeInfo();
+  }
+
+});
+
+/* =========================================================
+   CINEMATIC INTRO
+========================================================= */
+
+const cinematicIntro =
+document.getElementById(
+  "cinematicIntro"
+);
+
+const introCanvas =
+document.getElementById(
+  "introCanvas"
+);
+
+const ctx =
+introCanvas.getContext("2d");
+
+const introCopy =
+document.getElementById(
+  "introCopy"
+);
+
+const introStep =
+document.getElementById(
+  "introStep"
+);
+
+const introHeading =
+document.getElementById(
+  "introHeading"
+);
+
+const introDescription =
+document.getElementById(
+  "introDescription"
+);
+
+const introPhoto =
+document.getElementById(
+  "introPhoto"
+);
+
+const introLogoReveal =
+document.getElementById(
+  "introLogoReveal"
+);
+
+const introProgress =
+document.getElementById(
+  "introProgress"
+);
+
+const webCards = [
+  document.getElementById("web1"),
+  document.getElementById("web2"),
+  document.getElementById("web3"),
+  document.getElementById("web4")
+];
+
+const sceneLabels = [
+  document.getElementById("scene1"),
+  document.getElementById("scene2"),
+  document.getElementById("scene3"),
+  document.getElementById("scene4"),
+  document.getElementById("scene5")
+];
+
+let particles = [];
+let introRunning = false;
+let introStartTime = 0;
+let introFrame = null;
+let currentIntroScene = -1;
+
+const INTRO_DURATION = 34000;
+
+function resizeIntroCanvas(){
+
+  const dpr =
+  Math.min(
+    window.devicePixelRatio || 1,
+    2
+  );
+
+  introCanvas.width =
+  innerWidth * dpr;
+
+  introCanvas.height =
+  innerHeight * dpr;
+
+  introCanvas.style.width =
+  innerWidth + "px";
+
+  introCanvas.style.height =
+  innerHeight + "px";
+
+  ctx.setTransform(
+    dpr,0,0,dpr,0,0
+  );
+
+}
+
+window.addEventListener(
+"resize",
+resizeIntroCanvas
+);
+
+function createParticles(){
+
+  particles = [];
+
+  const amount =
+  innerWidth < 700
+  ? 110
+  : 220;
+
+  for(
+    let i = 0;
+    i < amount;
+    i++
+  ){
+
+    particles.push({
+
+      x:
+      (Math.random() - .5)
+      * innerWidth,
+
+      y:
+      (Math.random() - .5)
+      * innerHeight,
+
+      z:
+      Math.random()
+      * 1200 + 50,
+
+      pz:
+      1200,
+
+      speed:
+      Math.random()
+      * 7 + 5
+
+    });
+
+  }
+
+}
+
+function drawIntroParticles(time){
+
+  ctx.clearRect(
+    0,
+    0,
+    innerWidth,
+    innerHeight
+  );
+
+  const cx =
+  innerWidth / 2;
+
+  const cy =
+  innerHeight / 2;
+
+  const elapsed =
+  time - introStartTime;
+
+  let speedBoost = 1;
+
+  if(elapsed < 7000){
+    speedBoost = 2.4;
+  }
+  else if(
+    elapsed > 14000 &&
+    elapsed < 23000
+  ){
+    speedBoost = 1.5;
+  }
+  else if(
+    elapsed > 25000
+  ){
+    speedBoost = 3.2;
+  }
+
+  particles.forEach(p => {
+
+    p.pz = p.z;
+
+    p.z -=
+    p.speed *
+    speedBoost;
+
+    if(p.z < 20){
+
+      p.z = 1200;
+
+      p.x =
+      (Math.random() - .5)
+      * innerWidth;
+
+      p.y =
+      (Math.random() - .5)
+      * innerHeight;
+
+      p.pz =
+      p.z;
+
+    }
+
+    const scale =
+    500 / p.z;
+
+    const previousScale =
+    500 / p.pz;
+
+    const x =
+    cx + p.x * scale;
+
+    const y =
+    cy + p.y * scale;
+
+    const px =
+    cx + p.x * previousScale;
+
+    const py =
+    cy + p.y * previousScale;
+
+    const alpha =
+    Math.min(
+      1,
+      (1200 - p.z) / 900
+    );
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      px,
+      py
+    );
+
+    ctx.lineTo(
+      x,
+      y
+    );
+
+    ctx.strokeStyle =
+    `rgba(82,170,215,${
+      alpha * .48
+    })`;
+
+    ctx.lineWidth =
+    Math.max(
+      .3,
+      2.3 * scale
+    );
+
+    ctx.stroke();
+
+  });
+
+}
+
+function setScene(
+  index,
+  step,
+  heading,
+  description
+){
+
+  if(
+    currentIntroScene === index
+  ){
+    return;
+  }
+
+  currentIntroScene =
+  index;
+
+  sceneLabels.forEach(
+  (el,i) => {
+
+    el.classList.toggle(
+      "active",
+      i === index
+    );
+
+  });
+
+  introCopy.classList.add(
+    "switching"
+  );
+
+  setTimeout(() => {
+
+    introStep.textContent =
+    step;
+
+    introHeading.textContent =
+    heading;
+
+    introDescription.textContent =
+    description;
+
+    introCopy.classList.remove(
+      "switching"
+    );
+
+  },350);
+
+}
+
+function updateIntroScene(
+  elapsed
+){
+
+  if(elapsed < 6500){
+
+    setScene(
+      0,
+      "01 / ENTER",
+      "Entering the visual web.",
+      "Moving through a field of publicly indexed visual information."
+    );
+
+  }
+
+  else if(elapsed < 12500){
+
+    setScene(
+      1,
+      "02 / ANALYZE",
+      "A photo becomes a visual signature.",
+      "The submitted image becomes the starting point for the search."
+    );
+
+    introPhoto.classList.add(
+      "visible",
+      "scanning"
+    );
+
+  }
+
+  else if(elapsed < 20500){
+
+    introPhoto.classList.remove(
+      "visible",
+      "scanning"
+    );
+
+    webCards.forEach(
+      card =>
+      card.classList.add("show")
+    );
+
+    setScene(
+      2,
+      "03 / EXPAND",
+      "The network opens.",
+      "Potential source pages emerge from the search provider's indexed results."
+    );
+
+  }
+
+  else if(elapsed < 27000){
+
+    setScene(
+      3,
+      "04 / TRACE",
+      "Follow the image to its source.",
+      "Returned webpages become paths you can inspect yourself."
+    );
+
+  }
+
+  else{
+
+    introCopy.style.opacity =
+    "0";
+
+    webCards.forEach(
+      card =>
+      card.classList.remove(
+        "show"
+      )
+    );
+
+    introLogoReveal.classList.add(
+      "show"
+    );
+
+    sceneLabels.forEach(
+    (el,i) => {
+
+      el.classList.toggle(
+        "active",
+        i === 4
+      );
+
+    });
+
+  }
+
+}
+
+function introLoop(time){
+
+  if(!introRunning){
+    return;
+  }
+
+  const elapsed =
+  time - introStartTime;
+
+  drawIntroParticles(
+    time
+  );
+
+  updateIntroScene(
+    elapsed
+  );
+
+  introProgress.style.width =
+  Math.min(
+    100,
+    elapsed /
+    INTRO_DURATION *
+    100
+  ) + "%";
+
+  if(
+    elapsed >=
+    INTRO_DURATION
+  ){
+
+    introRunning = false;
+
+    return;
+
+  }
+
+  introFrame =
+  requestAnimationFrame(
+    introLoop
+  );
+
+}
+
+function resetIntro(){
+
+  currentIntroScene = -1;
+
+  introCopy.style.opacity =
+  "";
+
+  introCopy.classList.remove(
+    "switching"
+  );
+
+  introPhoto.classList.remove(
+    "visible",
+    "scanning"
+  );
+
+  introLogoReveal.classList.remove(
+    "show"
+  );
+
+  webCards.forEach(
+    card =>
+    card.classList.remove(
+      "show"
+    )
+  );
+
+  introProgress.style.width =
+  "0%";
+
+}
+
+function startIntro(
+  force = false
+){
+
+  if(
+    !force &&
+    localStorage.getItem(
+      "tracelens_intro_seen"
+    ) === "true"
+  ){
+    return;
+  }
+
+  cinematicIntro.classList.add(
+    "active"
+  );
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+  resetIntro();
+
+  resizeIntroCanvas();
+
+  createParticles();
 
   const reduced =
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if(!force && localStorage.getItem("tracelens_intro_seen")==="true"){
-    return;
-  }
-
-  createNodes();
-
-  intro.classList.add("show");
-
-  introKicker.textContent="SYSTEM BOOT";
-  introTitle.textContent="Initializing Visual Intelligence";
-  introSub.textContent="SECURE SYSTEM STARTUP";
-  enterBtn.style.display="none";
-
-  introProgress.classList.remove("run");
-  void introProgress.offsetWidth;
-  introProgress.classList.add("run");
+  window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
 
   if(reduced){
-    introKicker.textContent="TRACELENS";
-    introTitle.textContent="Photo Protection Intelligence";
-    introSub.textContent="SYSTEM READY";
-    enterBtn.style.display="inline-flex";
+
+    introCopy.style.opacity =
+    "0";
+
+    introLogoReveal.classList.add(
+      "show"
+    );
+
     return;
+
   }
 
-  scheduleIntro(()=>{
-    introKicker.textContent="DIGITAL NETWORK";
-    introTitle.textContent="One Image. Millions of Pages.";
-    introSub.textContent="ONE SEARCH";
-  },5000);
+  introRunning = true;
 
-  scheduleIntro(()=>{
-    introKicker.textContent="VISUAL SCANNER";
-    introTitle.textContent="Analyzing Visual Patterns";
-    introSub.textContent="CREATING IMAGE FINGERPRINT";
-  },10500);
+  introStartTime =
+  performance.now();
 
-  scheduleIntro(()=>{
-    introKicker.textContent="PUBLIC WEB";
-    introTitle.textContent="Searching the Public Web";
-    introSub.textContent="DISCOVER • VERIFY • PROTECT";
-  },16500);
+  introFrame =
+  requestAnimationFrame(
+    introLoop
+  );
 
-  scheduleIntro(()=>{
-    introKicker.textContent="TRACELENS";
-    introTitle.textContent="Photo Protection Intelligence";
-    introSub.textContent="SYSTEM READY";
-    enterBtn.style.display="inline-flex";
-  },22000);
-
-  scheduleIntro(finishIntro,27000);
 }
 
 function finishIntro(){
-  introTimers.forEach(clearTimeout);
-  introTimers=[];
 
-  localStorage.setItem("tracelens_intro_seen","true");
+  introRunning = false;
 
-  intro.style.opacity="0";
-  intro.style.transition="opacity .7s ease";
+  if(introFrame){
+    cancelAnimationFrame(
+      introFrame
+    );
+  }
 
-  setTimeout(()=>{
-    intro.classList.remove("show");
-    intro.style.opacity="";
-  },700);
+  localStorage.setItem(
+    "tracelens_intro_seen",
+    "true"
+  );
+
+  cinematicIntro.style.transition =
+  "opacity .65s ease, transform .65s ease";
+
+  cinematicIntro.style.opacity =
+  "0";
+
+  cinematicIntro.style.transform =
+  "scale(1.08)";
+
+  setTimeout(() => {
+
+    cinematicIntro.classList.remove(
+      "active"
+    );
+
+    cinematicIntro.style.opacity =
+    "";
+
+    cinematicIntro.style.transform =
+    "";
+
+    document.body.classList.remove(
+      "modal-open"
+    );
+
+  },650);
+
 }
 
 function replayIntro(){
+
+  localStorage.removeItem(
+    "tracelens_intro_seen"
+  );
+
   startIntro(true);
+
 }
 
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape" && intro.classList.contains("show")){
-    finishIntro();
-  }
-});
+document.addEventListener(
+"keydown",
+e => {
 
-window.addEventListener("load",()=>{
-  startIntro(false);
-});
+  if(
+    e.key === "Escape"
+  ){
 
-/* =========================================================
-   MODALS / INFO
-========================================================= */
-
-function openInfo(title,text){
-  document.getElementById("infoTitle").textContent=title;
-  document.getElementById("infoText").textContent=text;
-  document.getElementById("infoModal").classList.add("open");
-}
-
-function closeModal(id){
-  document.getElementById(id).classList.remove("open");
-}
-
-document.querySelectorAll(".modal").forEach(modal=>{
-  modal.addEventListener("click",e=>{
-    if(e.target===modal){
-      modal.classList.remove("open");
+    if(
+      cinematicIntro.classList.contains(
+        "active"
+      )
+    ){
+      finishIntro();
     }
-  });
+    else{
+      closeInfo();
+    }
+
+  }
+
+});
+
+window.addEventListener(
+"load",
+() => {
+
+  startIntro(false);
+
 });
 
 /* =========================================================
-   AUTH UI
-   NOTE: VISUAL/LOCAL ONLY. NO FAKE CLOUD AUTH.
+   EXISTING TRACELENS SEARCH
 ========================================================= */
 
-let authMode="login";
+const CLOUD_NAME =
+"qcyouffh";
 
-function openAuth(mode){
-  setAuthMode(mode);
-  document.getElementById("authModal").classList.add("open");
-}
-
-function setAuthMode(mode){
-  authMode=mode;
-
-  const signup=mode==="signup";
-
-  document.getElementById("authTitle").textContent=
-    signup ? "Create your account" : "Welcome back";
-
-  document.getElementById("nameField").style.display=
-    signup ? "block" : "none";
-
-  document.getElementById("authConfirm").style.display=
-    signup ? "block" : "none";
-
-  document.getElementById("authSubmit").textContent=
-    signup ? "Create Account" : "Log In";
-
-  document.getElementById("loginTab").className=
-    signup ? "secondary" : "primary";
-
-  document.getElementById("signupTab").className=
-    signup ? "primary" : "secondary";
-}
-
-function providerNotConnected(provider){
-  alert(
-    provider+
-    " sign-in is not connected yet. Guest searching is available."
-  );
-}
-
-function demoAuth(){
-  alert(
-    "Real account authentication is not connected yet. " +
-    "No password was submitted or saved."
-  );
-}
-
-function continueGuest(){
-  localStorage.setItem("tracelens_guest","true");
-
-  document.getElementById("loginButton").style.display="none";
-  document.getElementById("signupButton").style.display="none";
-
-  const pill=document.getElementById("accountPill");
-  pill.style.display="inline-flex";
-  pill.textContent="Guest";
-
-  closeModal("authModal");
-}
-
-function openAccount(){
-  document.getElementById("accountModal").classList.add("open");
-}
-
-if(localStorage.getItem("tracelens_guest")==="true"){
-  document.getElementById("loginButton").style.display="none";
-  document.getElementById("signupButton").style.display="none";
-  document.getElementById("accountPill").style.display="inline-flex";
-}
-
-/* =========================================================
-   EXISTING WORKING TRACELENS SEARCH
-========================================================= */
-
-const CLOUD_NAME = "qcyouffh";
-const UPLOAD_PRESET = "tracelens_upload";
+const UPLOAD_PRESET =
+"tracelens_upload";
 
 const CLOUDINARY_UPLOAD =
 `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
 const SEARCH_ENDPOINT =
-"/.netlify/functions/search";
+"/api/search";
 
-const fileInput=document.getElementById("fileInput");
-const upload=document.getElementById("upload");
-const previewArea=document.getElementById("previewArea");
-const preview=document.getElementById("preview");
-const consent=document.getElementById("consent");
-const start=document.getElementById("start");
-const statusBox=document.getElementById("status");
-const statusText=document.getElementById("statusText");
-const bar=document.getElementById("bar");
-const results=document.getElementById("results");
-const resultContent=document.getElementById("resultContent");
-const resultCount=document.getElementById("resultCount");
-const scanline=document.getElementById("scanline");
+const fileInput =
+document.getElementById(
+  "fileInput"
+);
 
-let selectedFile=null;
+const upload =
+document.getElementById(
+  "upload"
+);
 
-fileInput.addEventListener("change",()=>{
-  if(fileInput.files[0]){
-    loadPhoto(fileInput.files[0]);
+const previewArea =
+document.getElementById(
+  "previewArea"
+);
+
+const preview =
+document.getElementById(
+  "preview"
+);
+
+const consent =
+document.getElementById(
+  "consent"
+);
+
+const start =
+document.getElementById(
+  "start"
+);
+
+const statusBox =
+document.getElementById(
+  "status"
+);
+
+const statusText =
+document.getElementById(
+  "statusText"
+);
+
+const statusPercent =
+document.getElementById(
+  "statusPercent"
+);
+
+const bar =
+document.getElementById(
+  "bar"
+);
+
+const results =
+document.getElementById(
+  "results"
+);
+
+const resultContent =
+document.getElementById(
+  "resultContent"
+);
+
+const resultCount =
+document.getElementById(
+  "resultCount"
+);
+
+const scanline =
+document.getElementById(
+  "scanline"
+);
+
+let selectedFile = null;
+
+fileInput.addEventListener(
+"change",
+() => {
+
+  if(
+    fileInput.files[0]
+  ){
+    loadPhoto(
+      fileInput.files[0]
+    );
   }
+
 });
 
-consent.addEventListener("change",()=>{
-  start.disabled=!consent.checked || !selectedFile;
+consent.addEventListener(
+"change",
+() => {
+
+  start.disabled =
+  !consent.checked ||
+  !selectedFile;
+
 });
 
-upload.addEventListener("dragover",e=>{
+upload.addEventListener(
+"dragover",
+e => {
+
   e.preventDefault();
-  upload.classList.add("drag");
+
+  upload.classList.add(
+    "drag"
+  );
+
 });
 
-upload.addEventListener("dragleave",()=>{
-  upload.classList.remove("drag");
+upload.addEventListener(
+"dragleave",
+() => {
+
+  upload.classList.remove(
+    "drag"
+  );
+
 });
 
-upload.addEventListener("drop",e=>{
+upload.addEventListener(
+"drop",
+e => {
+
   e.preventDefault();
-  upload.classList.remove("drag");
 
-  if(e.dataTransfer.files[0]){
-    loadPhoto(e.dataTransfer.files[0]);
+  upload.classList.remove(
+    "drag"
+  );
+
+  if(
+    e.dataTransfer.files[0]
+  ){
+    loadPhoto(
+      e.dataTransfer.files[0]
+    );
   }
+
 });
 
-function loadPhoto(file){
+function loadPhoto(
+  file
+){
 
-  const allowed=[
+  const allowed = [
     "image/jpeg",
     "image/png",
     "image/webp"
   ];
 
-  if(!allowed.includes(file.type)){
-    alert("Please choose a JPG, PNG or WEBP image.");
+  if(
+    !allowed.includes(
+      file.type
+    )
+  ){
+
+    alert(
+      "Please choose a JPG, PNG or WEBP image."
+    );
+
     return;
+
   }
 
-  if(file.size>10*1024*1024){
-    alert("Please choose an image smaller than 10 MB.");
+  if(
+    file.size >
+    10 * 1024 * 1024
+  ){
+
+    alert(
+      "Please choose an image smaller than 10 MB."
+    );
+
     return;
+
   }
 
-  selectedFile=file;
+  selectedFile =
+  file;
 
-  const localURL=URL.createObjectURL(file);
-  preview.src=localURL;
+  const localURL =
+  URL.createObjectURL(
+    file
+  );
 
-  preview.onload=()=>{
-    document.getElementById("resolution").textContent=
-      preview.naturalWidth+" × "+preview.naturalHeight;
+  preview.src =
+  localURL;
+
+  preview.onload =
+  () => {
+
+    document.getElementById(
+      "resolution"
+    ).textContent =
+    preview.naturalWidth +
+    " × " +
+    preview.naturalHeight;
+
   };
 
-  document.getElementById("filename").textContent=
-    file.name || "Photo";
+  document.getElementById(
+    "filename"
+  ).textContent =
+  file.name || "Photo";
 
-  document.getElementById("filesize").textContent=
-    (file.size/1024/1024).toFixed(2)+" MB";
+  document.getElementById(
+    "filesize"
+  ).textContent =
+  (
+    file.size /
+    1024 /
+    1024
+  ).toFixed(2) +
+  " MB";
 
-  document.getElementById("filetype").textContent=
-    file.type.replace("image/","").toUpperCase();
+  document.getElementById(
+    "filetype"
+  ).textContent =
+  file.type
+  .replace(
+    "image/",
+    ""
+  )
+  .toUpperCase();
 
-  upload.style.display="none";
-  previewArea.style.display="grid";
-  results.style.display="none";
-  statusBox.style.display="none";
+  upload.style.display =
+  "none";
 
-  consent.checked=false;
-  start.disabled=true;
+  previewArea.style.display =
+  "grid";
+
+  results.style.display =
+  "none";
+
+  statusBox.style.display =
+  "none";
+
+  consent.checked =
+  false;
+
+  start.disabled =
+  true;
+
 }
 
 function removePhoto(){
 
-  selectedFile=null;
-  preview.src="";
-  fileInput.value="";
+  selectedFile =
+  null;
 
-  previewArea.style.display="none";
-  upload.style.display="grid";
+  preview.src =
+  "";
 
-  consent.checked=false;
-  start.disabled=true;
+  fileInput.value =
+  "";
 
-  statusBox.style.display="none";
-  results.style.display="none";
+  previewArea.style.display =
+  "none";
 
-  resultContent.innerHTML="";
-  bar.style.width="0%";
+  upload.style.display =
+  "grid";
+
+  consent.checked =
+  false;
+
+  start.disabled =
+  true;
+
+  statusBox.style.display =
+  "none";
+
+  results.style.display =
+  "none";
+
+  resultContent.innerHTML =
+  "";
+
+  bar.style.width =
+  "0%";
+
+  statusPercent.textContent =
+  "0%";
+
 }
 
-function updateStatus(text,percent){
-  statusText.textContent=text;
-  bar.style.width=percent+"%";
+function updateStatus(
+  text,
+  percent
+){
+
+  statusText.textContent =
+  text;
+
+  statusPercent.textContent =
+  percent + "%";
+
+  bar.style.width =
+  percent + "%";
+
 }
 
 async function scanPhoto(){
 
-  if(!selectedFile || !consent.checked){
+  if(
+    !selectedFile ||
+    !consent.checked
+  ){
     return;
   }
 
-  start.disabled=true;
-  statusBox.style.display="block";
-  results.style.display="none";
-  scanline.style.display="block";
+  start.disabled =
+  true;
+
+  statusBox.style.display =
+  "block";
+
+  results.style.display =
+  "none";
+
+  scanline.style.display =
+  "block";
 
   try{
 
-    updateStatus("Uploading photo securely...",20);
+    updateStatus(
+      "Uploading image...",
+      20
+    );
 
-    const formData=new FormData();
+    const formData =
+    new FormData();
 
-    formData.append("file",selectedFile);
-    formData.append("upload_preset",UPLOAD_PRESET);
+    formData.append(
+      "file",
+      selectedFile
+    );
 
-    const uploadResponse=
-      await fetch(CLOUDINARY_UPLOAD,{
+    formData.append(
+      "upload_preset",
+      UPLOAD_PRESET
+    );
+
+    const uploadResponse =
+    await fetch(
+      CLOUDINARY_UPLOAD,
+      {
         method:"POST",
         body:formData
-      });
+      }
+    );
 
-    const uploadData=
-      await uploadResponse.json();
+    const uploadData =
+    await uploadResponse.json();
 
-    if(!uploadResponse.ok){
+    if(
+      !uploadResponse.ok
+    ){
 
-      console.error("Cloudinary:",uploadData);
+      console.error(
+        "Cloudinary:",
+        uploadData
+      );
 
       throw new Error(
         uploadData?.error?.message ||
         "Photo upload failed."
       );
+
     }
 
-    const publicImageURL=
-      uploadData.secure_url;
+    const publicImageURL =
+    uploadData.secure_url;
 
-    if(!publicImageURL){
-      throw new Error("No image URL was returned.");
+    if(
+      !publicImageURL
+    ){
+
+      throw new Error(
+        "No image URL was returned."
+      );
+
     }
 
-    updateStatus("Searching indexed webpages...",55);
+    updateStatus(
+      "Searching indexed webpages...",
+      55
+    );
 
-    const searchURL=
-      SEARCH_ENDPOINT+
-      "?url="+
-      encodeURIComponent(publicImageURL);
+    const searchURL =
+    SEARCH_ENDPOINT +
+    "?url=" +
+    encodeURIComponent(
+      publicImageURL
+    );
 
-    const searchResponse=
-      await fetch(searchURL);
+    const searchResponse =
+    await fetch(
+      searchURL
+    );
 
-    const searchData=
-      await searchResponse.json();
+    const searchData =
+    await searchResponse.json();
 
-    if(!searchResponse.ok){
+    if(
+      !searchResponse.ok
+    ){
 
-      console.error("Search API:",searchData);
+      console.error(
+        "Search API:",
+        searchData
+      );
 
       throw new Error(
         searchData.error ||
         "Reverse-image search failed."
       );
+
     }
 
-    updateStatus("Preparing real matches...",85);
+    updateStatus(
+      "Preparing source matches...",
+      85
+    );
 
-    renderResults(searchData);
+    renderResults(
+      searchData
+    );
 
-    updateStatus("Search complete",100);
+    updateStatus(
+      "Search complete",
+      100
+    );
 
-    scanline.style.display="none";
-    results.style.display="block";
+    scanline.style.display =
+    "none";
+
+    results.style.display =
+    "block";
 
     results.scrollIntoView({
       behavior:"smooth",
       block:"start"
     });
 
-  }catch(error){
+  }
 
-    console.error(error);
+  catch(error){
 
-    scanline.style.display="none";
-    results.style.display="block";
+    console.error(
+      error
+    );
 
-    resultCount.textContent="SEARCH ERROR";
+    scanline.style.display =
+    "none";
 
-    resultContent.innerHTML=
-      `<div class="error">
-        <strong>Search couldn't be completed.</strong>
-        <br><br>
-        ${escapeHTML(error.message || "Unknown error")}
-      </div>`;
+    results.style.display =
+    "block";
+
+    resultCount.textContent =
+    "SEARCH ERROR";
+
+    resultContent.innerHTML =
+    `
+    <div class="error">
+
+      <strong>
+        Search couldn't be completed.
+      </strong>
+
+      <br><br>
+
+      ${escapeHTML(
+        error.message ||
+        "Unknown error"
+      )}
+
+    </div>
+    `;
 
     results.scrollIntoView({
       behavior:"smooth"
     });
 
-  }finally{
-    start.disabled=!consent.checked;
   }
+
+  finally{
+
+    start.disabled =
+    !consent.checked;
+
+  }
+
 }
 
-function renderResults(data){
+/* =========================================================
+   RESULT PARSING
+========================================================= */
 
-  let matches=[];
+function renderResults(
+  data
+){
 
-  const possibleArrays=[
+  let matches = [];
+
+  const possibleArrays = [
+
     data.visual_matches,
+
     data.image_results,
+
     data.organic_results,
+
     data.results
+
   ];
 
-  for(const array of possibleArrays){
-    if(Array.isArray(array)){
-      for(const item of array){
-        matches.push(item);
+  for(
+    const array
+    of possibleArrays
+  ){
+
+    if(
+      Array.isArray(
+        array
+      )
+    ){
+
+      for(
+        const item
+        of array
+      ){
+
+        matches.push(
+          item
+        );
+
       }
+
     }
+
   }
 
-  const unique=[];
-  const seen=new Set();
+  const unique = [];
 
-  for(const item of matches){
+  const seen =
+  new Set();
 
-    const link=
-      item.link ||
-      item.source_url ||
-      item.url ||
-      item.page_url ||
-      "";
+  for(
+    const item
+    of matches
+  ){
 
-    if(!link || seen.has(link)){
+    const link =
+    item.link ||
+    item.source_url ||
+    item.url ||
+    item.page_url ||
+    "";
+
+    if(
+      !link ||
+      seen.has(link)
+    ){
       continue;
     }
 
-    seen.add(link);
-    unique.push(item);
+    seen.add(
+      link
+    );
+
+    unique.push(
+      item
+    );
+
   }
 
-  resultCount.textContent=
-    unique.length+
-    (unique.length===1 ? " RESULT" : " RESULTS");
+  resultCount.textContent =
+  unique.length +
+  (
+    unique.length === 1
+    ? " RESULT"
+    : " RESULTS"
+  );
 
-  if(unique.length===0){
+  if(
+    unique.length === 0
+  ){
 
-    resultContent.innerHTML=
-      `<div class="empty">
-        <h3>No matching webpages were returned.</h3>
-        <p>
-          This does not prove that the image does not exist elsewhere.
-          It only means the current search provider did not return
-          a matching webpage.
-        </p>
-      </div>`;
+    resultContent.innerHTML =
+    `
+    <div class="empty">
+
+      <h3>
+        No matching webpages were returned.
+      </h3>
+
+      <p>
+        This does not prove that the image
+        does not appear elsewhere. It only
+        means the current search provider
+        did not return a matching source.
+      </p>
+
+    </div>
+    `;
 
     return;
+
   }
 
-  const grid=document.createElement("div");
-  grid.className="resultGrid";
+  const grid =
+  document.createElement(
+    "div"
+  );
 
-  unique.forEach(item=>{
+  grid.className =
+  "result-grid";
 
-    const link=
-      item.link ||
-      item.source_url ||
-      item.url ||
-      item.page_url ||
-      "";
+  unique.forEach(
+  item => {
 
-    const title=
-      item.title ||
-      item.name ||
-      "Matching webpage";
+    const link =
+    item.link ||
+    item.source_url ||
+    item.url ||
+    item.page_url ||
+    "";
 
-    const source=
-      item.source ||
-      item.domain ||
-      getDomain(link);
+    const title =
+    item.title ||
+    item.name ||
+    "Matching webpage";
 
-    const thumbnail=
-      item.thumbnail ||
-      item.thumbnail_url ||
-      item.image ||
-      item.image_url ||
-      "";
+    const source =
+    item.source ||
+    item.domain ||
+    getDomain(
+      link
+    );
 
-    const card=document.createElement("div");
-    card.className="resultCard";
+    const thumbnail =
+    item.thumbnail ||
+    item.thumbnail_url ||
+    item.image ||
+    item.image_url ||
+    "";
 
-    let thumbHTML="";
+    const card =
+    document.createElement(
+      "div"
+    );
+
+    card.className =
+    "result-card";
+
+    let thumbHTML =
+    "";
 
     if(
-      typeof thumbnail==="string" &&
-      thumbnail.startsWith("http")
+      typeof thumbnail ===
+      "string" &&
+      thumbnail.startsWith(
+        "http"
+      )
     ){
-      thumbHTML=
-        `<div class="thumb">
-          <img
-            src="${escapeAttribute(thumbnail)}"
-            alt="Search result preview"
-            loading="lazy"
-            referrerpolicy="no-referrer">
-        </div>`;
+
+      thumbHTML =
+      `
+      <div class="thumb">
+
+        <img
+          src="${escapeAttribute(
+            thumbnail
+          )}"
+          alt="Search result preview"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        >
+
+      </div>
+      `;
+
     }
 
-    card.innerHTML=
-      `${thumbHTML}
+    card.innerHTML =
+    `
+    ${thumbHTML}
 
-      <div class="resultType">WEB MATCH</div>
+    <div class="result-type">
+      WEB MATCH
+    </div>
 
-      <h3>${escapeHTML(title)}</h3>
+    <h3>
+      ${escapeHTML(
+        title
+      )}
+    </h3>
 
-      <div class="domain">
-        ${escapeHTML(source)}
-      </div>
+    <div class="domain">
+      ${escapeHTML(
+        source
+      )}
+    </div>
 
-      <a
-        class="btn primary"
-        href="${escapeAttribute(link)}"
-        target="_blank"
-        rel="noopener noreferrer">
-        OPEN SOURCE ↗
-      </a>`;
+    <a
+      class="primary btn"
+      href="${escapeAttribute(
+        link
+      )}"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      OPEN SOURCE ↗
+    </a>
+    `;
 
-    grid.appendChild(card);
+    grid.appendChild(
+      card
+    );
+
   });
 
-  resultContent.innerHTML="";
-  resultContent.appendChild(grid);
+  resultContent.innerHTML =
+  "";
+
+  resultContent.appendChild(
+    grid
+  );
+
 }
 
-function getDomain(url){
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getDomain(
+  url
+){
+
   try{
-    return new URL(url).hostname;
-  }catch{
-    return "Website";
+
+    return new URL(
+      url
+    ).hostname;
+
   }
+  catch{
+
+    return "Website";
+
+  }
+
 }
 
-function escapeHTML(value){
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+function escapeHTML(
+  value
+){
+
+  return String(
+    value
+  )
+  .replaceAll(
+    "&",
+    "&amp;"
+  )
+  .replaceAll(
+    "<",
+    "&lt;"
+  )
+  .replaceAll(
+    ">",
+    "&gt;"
+  )
+  .replaceAll(
+    '"',
+    "&quot;"
+  )
+  .replaceAll(
+    "'",
+    "&#039;"
+  );
+
 }
 
-function escapeAttribute(value){
-  return escapeHTML(value);
+function escapeAttribute(
+  value
+){
+
+  return escapeHTML(
+    value
+  );
+
 }
+
 </script>
 
 </body>
