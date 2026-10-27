@@ -393,7 +393,7 @@ nav{
 ================================================== */
 
 .discovery-strip{
-  padding:80px 0 150px;
+  padding:70px 0 75px;
 }
 
 .discovery-grid{
@@ -444,7 +444,7 @@ nav{
 ================================================== */
 
 .scanner-section{
-  padding:120px 0 170px;
+  padding:75px 0 70px;
 }
 
 .scanner{
@@ -486,7 +486,7 @@ nav{
 
 .drop-zone{
   margin:18px;
-  min-height:400px;
+  min-height:320px;
   display:grid;
   place-items:center;
   padding:40px;
@@ -693,8 +693,11 @@ button:disabled{
 
 .results{
   display:none;
-  padding:5px 18px 25px;
+  padding:5px 18px 30px;
   scroll-margin-top:90px;
+  opacity:1;
+  visibility:visible;
+  filter:none;
 }
 
 .results-header{
@@ -736,51 +739,92 @@ button:disabled{
 
 .result-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));
-  gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,350px),1fr));
+  gap:18px;
 }
 
 .result-card{
-  padding:18px;
-  border:1px solid #1d2d45;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+  border:1px solid #29415d;
   border-radius:16px;
-  background:#07101b;
-  transition:.3s;
+  background:#0a1421;
+  transition:border-color .25s,box-shadow .25s;
+  opacity:1;
+  visibility:visible;
+  filter:none;
 }
 
 .result-card:hover{
-  transform:translateY(-5px);
-  border-color:#36516d;
+  border-color:#52728f;
+  box-shadow:0 16px 38px rgba(0,0,0,.32);
 }
 
 .result-thumb{
-  height:clamp(210px,28vw,360px);
+  height:clamp(240px,22vw,340px);
   overflow:hidden;
   display:grid;
   place-items:center;
-  background:#02050a;
+  background:#030813;
   border-radius:10px;
-  margin-bottom:13px;
+  margin-bottom:18px;
 }
 
 .result-thumb img{
   width:100%;
   height:100%;
   object-fit:contain;
+  filter:none;
 }
 
 .result-label{
-  color:#61cada;
-  font-size:8px;
+  color:#72dcec;
+  font-size:10px;
   font-weight:900;
   letter-spacing:1.5px;
 }
 
+.result-card h3{
+  color:#f5f7fa;
+  font-size:clamp(19px,1.5vw,23px);
+  line-height:1.35;
+  margin:12px 0 0;
+}
+
 .result-domain{
-  color:#6e7d95;
-  font-size:10px;
-  margin:7px 0 15px;
+  color:#8fa2ba;
+  font-size:12px;
+  margin:8px 0 14px;
   word-break:break-all;
+}
+
+.result-description{
+  color:#aeb8c7;
+  font-size:14px;
+  line-height:1.6;
+  margin:0 0 16px;
+}
+
+.result-price{
+  color:#f5f7fa;
+  font-size:20px;
+  font-weight:800;
+  margin:2px 0 0;
+}
+
+.result-meta{
+  color:#aeb8c7;
+  font-size:12px;
+  line-height:1.5;
+  margin:8px 0 14px;
+}
+
+.result-card .btn{
+  align-self:flex-start;
+  min-height:42px;
+  margin-top:auto;
 }
 
 .empty,
@@ -807,11 +851,11 @@ button:disabled{
 ================================================== */
 
 .world-section{
-  min-height:120vh;
+  min-height:0;
   display:flex;
   align-items:center;
   position:relative;
-  padding:150px 0;
+  padding:75px 0;
 }
 
 .world-card{
@@ -868,12 +912,12 @@ button:disabled{
 ================================================== */
 
 .giant{
-  min-height:100vh;
+  min-height:0;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-  padding:100px 20px;
+  padding:85px 20px;
 }
 
 .giant h2{
@@ -889,7 +933,7 @@ button:disabled{
 ================================================== */
 
 .features{
-  padding:150px 0;
+  padding:85px 0;
 }
 
 .feature-grid{
@@ -900,7 +944,7 @@ button:disabled{
 }
 
 .feature{
-  min-height:290px;
+  min-height:220px;
   padding:28px;
   border:1px solid var(--line);
   border-radius:22px;
@@ -933,7 +977,7 @@ button:disabled{
 }
 
 .feature h3{
-  margin-top:55px;
+  margin-top:35px;
   font-size:25px;
 }
 
@@ -947,12 +991,12 @@ button:disabled{
 ================================================== */
 
 .faq{
-  padding:150px 0;
+  padding:85px 0;
 }
 
 .faq-list{
   max-width:900px;
-  margin:55px auto 0;
+  margin:35px auto 0;
 }
 
 .faq-item{
@@ -1013,11 +1057,12 @@ button:disabled{
 ================================================== */
 
 .final{
-  min-height:80vh;
+  min-height:0;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
+  padding:95px 0;
 }
 
 .final h2{
@@ -1150,23 +1195,6 @@ footer{
 
 @keyframes scannerPulse{
   50%{box-shadow:0 0 58px rgba(84,199,228,.18),0 50px 150px rgba(0,0,0,.55)}
-}
-
-.result-card{
-  min-height:220px;
-  display:flex;
-  flex-direction:column;
-}
-
-.result-card h3{
-  font-size:19px;
-  line-height:1.35;
-  margin:12px 0 0;
-}
-
-.result-card .btn{
-  align-self:flex-start;
-  margin-top:auto;
 }
 
 .result-tabs[hidden]{display:none}
@@ -1486,73 +1514,6 @@ footer{
 
 </section>
 
-<!-- TYPES -->
-
-<section class="discovery-strip" id="discover">
-
-<div class="container">
-
-  <div class="section-title center">
-    <div class="eyebrow">ONE IMAGE • MANY DIRECTIONS</div>
-
-    <h2>
-      What can you
-      <span class="gradient-text">discover?</span>
-    </h2>
-
-    <p>
-      TraceLens organizes visual-search results based on what
-      the search provider finds useful about your image.
-    </p>
-  </div>
-
-  <div class="discovery-grid">
-
-    <div class="discovery-card tilt">
-      <div class="discovery-icon">👕</div>
-      <h3>Products</h3>
-      <p>
-        Discover visually similar products and possible shopping pages.
-      </p>
-    </div>
-
-    <div class="discovery-card tilt">
-      <div class="discovery-icon">🏝️</div>
-      <h3>Places</h3>
-      <p>
-        Explore visually related locations, landmarks and source pages.
-      </p>
-    </div>
-
-    <div class="discovery-card tilt">
-      <div class="discovery-icon">🖼️</div>
-      <h3>Images</h3>
-      <p>
-        Look for webpages containing the same or visually related image.
-      </p>
-    </div>
-
-    <div class="discovery-card tilt">
-      <div class="discovery-icon">💻</div>
-      <h3>Objects</h3>
-      <p>
-        Search devices, vehicles and other recognizable objects.
-      </p>
-    </div>
-
-    <div class="discovery-card tilt">
-      <div class="discovery-icon">⌕</div>
-      <h3>Sources</h3>
-      <p>
-        Open real webpages returned by the visual-search provider.
-      </p>
-    </div>
-
-  </div>
-
-</div>
-</section>
-
 <!-- SEARCH -->
 
 <section class="scanner-section" id="search">
@@ -1726,6 +1687,73 @@ footer{
 
       <div id="resultContent"></div>
 
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+<!-- TYPES -->
+
+<section class="discovery-strip" id="discover">
+
+<div class="container">
+
+  <div class="section-title center">
+    <div class="eyebrow">ONE IMAGE • MANY DIRECTIONS</div>
+
+    <h2>
+      What can you
+      <span class="gradient-text">discover?</span>
+    </h2>
+
+    <p>
+      TraceLens organizes visual-search results based on what
+      the search provider finds useful about your image.
+    </p>
+  </div>
+
+  <div class="discovery-grid">
+
+    <div class="discovery-card tilt">
+      <div class="discovery-icon">👕</div>
+      <h3>Products</h3>
+      <p>
+        Discover visually similar products and possible shopping pages.
+      </p>
+    </div>
+
+    <div class="discovery-card tilt">
+      <div class="discovery-icon">🏝️</div>
+      <h3>Places</h3>
+      <p>
+        Explore visually related locations, landmarks and source pages.
+      </p>
+    </div>
+
+    <div class="discovery-card tilt">
+      <div class="discovery-icon">🖼️</div>
+      <h3>Images</h3>
+      <p>
+        Look for webpages containing the same or visually related image.
+      </p>
+    </div>
+
+    <div class="discovery-card tilt">
+      <div class="discovery-icon">💻</div>
+      <h3>Objects</h3>
+      <p>
+        Search devices, vehicles and other recognizable objects.
+      </p>
+    </div>
+
+    <div class="discovery-card tilt">
+      <div class="discovery-icon">⌕</div>
+      <h3>Sources</h3>
+      <p>
+        Open real webpages returned by the visual-search provider.
+      </p>
     </div>
 
   </div>
@@ -2566,20 +2594,6 @@ async function runSearch(){
 
     results.style.display = "block";
 
-    if(window.gsap){
-
-      gsap.from(
-        ".result-card",
-        {
-          y:35,
-          opacity:0,
-          stagger:.08,
-          duration:.6
-        }
-      );
-
-    }
-
     results.scrollIntoView({
       behavior:"smooth",
       block:"start"
@@ -2761,6 +2775,22 @@ function renderResultCards(items){
     const link = item._traceLensURL;
     const title = item.title || item.name || "Visual search result";
     const source = item.source || item.domain || getDomain(link);
+    const description =
+      item.snippet ||
+      item.description ||
+      item.summary ||
+      "";
+    const price =
+      item.price ||
+      item.price_extracted ||
+      item.product?.price ||
+      "";
+    const seller =
+      item.seller ||
+      item.store ||
+      item.merchant ||
+      item.product?.seller ||
+      "";
     const thumbnail =
       item.thumbnail ||
       item.thumbnail_url ||
@@ -2794,14 +2824,42 @@ function renderResultCards(items){
     domain.className = "result-domain";
     domain.textContent = String(source);
 
+    card.append(label,heading,domain);
+
+    if(typeof price === "string" || typeof price === "number"){
+      const priceText = String(price).trim();
+      if(priceText){
+        const priceElement = document.createElement("div");
+        priceElement.className = "result-price";
+        priceElement.textContent = priceText;
+        card.appendChild(priceElement);
+      }
+    }
+
+    if(typeof seller === "string" && seller.trim()){
+      const sellerElement = document.createElement("div");
+      sellerElement.className = "result-meta";
+      sellerElement.textContent = seller.trim();
+      card.appendChild(sellerElement);
+    }
+
+    if(typeof description === "string" && description.trim()){
+      const descriptionElement = document.createElement("p");
+      descriptionElement.className = "result-description";
+      descriptionElement.textContent = description.trim();
+      card.appendChild(descriptionElement);
+    }
+
     const openLink = document.createElement("a");
     openLink.href = link;
     openLink.target = "_blank";
     openLink.rel = "noopener noreferrer";
     openLink.className = "btn btn-primary";
-    openLink.textContent = "OPEN RESULT ↗";
+    openLink.textContent = price || seller
+      ? "VIEW PRODUCT ↗"
+      : "OPEN SOURCE ↗";
 
-    card.append(label,heading,domain,openLink);
+    card.appendChild(openLink);
     grid.appendChild(card);
   });
 
@@ -4280,18 +4338,26 @@ if(window.gsap && window.ScrollTrigger){
   )
   .forEach(element => {
 
-    gsap.from(
+    gsap.fromTo(
       element,
       {
-        y:55,
-        opacity:0,
+        y:16,
+        opacity:1,
+        filter:"none",
+        visibility:"visible",
+      },
+      {
+        y:0,
+        opacity:1,
+        filter:"none",
+        visibility:"visible",
         duration:1,
-
+        ease:"power2.out",
         scrollTrigger:{
           trigger:element,
           start:"top 88%",
-          toggleActions:
-            "play none none reverse"
+          toggleActions:"play none none none",
+          once:true
         }
       }
     );
